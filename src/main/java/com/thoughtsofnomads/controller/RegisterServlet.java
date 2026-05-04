@@ -1,10 +1,11 @@
 package com.thoughtsofnomads.controller;
 
+import com.thoughtsofnomads.config.EmailService;
 import com.thoughtsofnomads.dao.UserDAO;
 import com.thoughtsofnomads.model.AccountStatus;
 import com.thoughtsofnomads.model.Role;
 import com.thoughtsofnomads.model.User;
-import com.thoughtsofnomads.util.EmailService;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import jakarta.servlet.ServletException;

@@ -1,9 +1,9 @@
 package com.thoughtsofnomads.dao;
 
+import com.thoughtsofnomads.config.DBConnection;
 import com.thoughtsofnomads.model.AccountStatus;
 import com.thoughtsofnomads.model.Role;
 import com.thoughtsofnomads.model.User;
-import com.thoughtsofnomads.util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

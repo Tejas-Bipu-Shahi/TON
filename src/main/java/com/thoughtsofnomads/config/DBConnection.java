@@ -1,4 +1,4 @@
-package com.thoughtsofnomads.util;
+package com.thoughtsofnomads.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

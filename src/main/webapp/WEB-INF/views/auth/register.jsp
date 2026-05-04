@@ -1,240 +1,305 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-    <!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Register - Thoughts of Nomads</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <html class="light" lang="en">
+    <style>
+        /* ── TOKENS ── */
+        :root {
+            --primary: #0e193e;
+            --primary-container: #242e54;
+            --surface: #f8f9fa;
+            --outline-variant: #c6c5cf;
+            --on-surface: #191c1d;
+            --on-surface-variant: #45464e;
+            --error: #ba1a1a;
+            --error-container: #ffdad6;
+            --radius: 4px;
+        }
 
-    <head>
-        <meta charset="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Register - Thoughts of Nomads</title>
-        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&amp;family=Work+Sans:wght@400;600&amp;display=swap"
-            rel="stylesheet" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-            rel="stylesheet" />
-        <script id="tailwind-config">
-            tailwind.config = {
-                darkMode: "class",
-                theme: {
-                    extend: {
-                        "colors": {
-                            "outline-variant": "#c6c5cf",
-                            "on-tertiary": "#ffffff",
-                            "surface": "#f8f9fa",
-                            "on-error": "#ffffff",
-                            "surface-bright": "#f8f9fa",
-                            "tertiary-container": "#462b00",
-                            "background": "#f8f9fa",
-                            "on-secondary-fixed-variant": "#82261b",
-                            "surface-dim": "#d9dadb",
-                            "secondary-fixed-dim": "#ffb4a8",
-                            "error-container": "#ffdad6",
-                            "on-tertiary-fixed-variant": "#643f00",
-                            "on-primary-container": "#8c96c2",
-                            "on-secondary-fixed": "#410000",
-                            "secondary-container": "#fd8270",
-                            "primary-container": "#242e54",
-                            "primary": "#0e193e",
-                            "on-surface": "#191c1d",
-                            "error": "#ba1a1a",
-                            "surface-container": "#edeeef",
-                            "secondary": "#a23d30",
-                            "on-primary-fixed": "#0e193e",
-                            "on-primary": "#ffffff",
-                            "on-secondary-container": "#731a11",
-                            "inverse-primary": "#bbc4f3",
-                            "on-tertiary-container": "#d18900",
-                            "surface-container-high": "#e7e8e9",
-                            "surface-container-low": "#f3f4f5",
-                            "on-surface-variant": "#45464e",
-                            "primary-fixed-dim": "#bbc4f3",
-                            "surface-container-highest": "#e1e3e4",
-                            "on-tertiary-fixed": "#2a1800",
-                            "on-error-container": "#93000a",
-                            "tertiary-fixed": "#ffddb5",
-                            "tertiary": "#2a1800",
-                            "tertiary-fixed-dim": "#ffb957",
-                            "surface-tint": "#535c85",
-                            "inverse-surface": "#2e3132",
-                            "surface-container-lowest": "#ffffff",
-                            "primary-fixed": "#dce1ff",
-                            "on-background": "#191c1d",
-                            "inverse-on-surface": "#f0f1f2",
-                            "surface-variant": "#e1e3e4",
-                            "on-primary-fixed-variant": "#3b456c",
-                            "outline": "#76767f",
-                            "secondary-fixed": "#ffdad4",
-                            "on-secondary": "#ffffff"
-                        },
-                        "borderRadius": {
-                            "DEFAULT": "0.125rem",
-                            "lg": "0.25rem",
-                            "xl": "0.5rem",
-                            "full": "0.75rem"
-                        },
-                        "spacing": {
-                            "margin-mobile": "16px",
-                            "gutter": "24px",
-                            "section-gap": "80px",
-                            "base": "8px",
-                            "margin-desktop": "48px",
-                            "container-max": "1280px"
-                        },
-                        "fontFamily": {
-                            "label-caps": ["Work Sans"],
-                            "body-lg": ["Work Sans"],
-                            "headline-md": ["Epilogue"],
-                            "display-lg": ["Epilogue"],
-                            "headline-lg": ["Epilogue"],
-                            "body-md": ["Work Sans"]
-                        },
-                        "fontSize": {
-                            "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600" }],
-                            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                            "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
-                            "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                            "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                            "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
-                        }
-                    }
-                }
-            }
-        </script>
-        <style>
-            .material-symbols-outlined {
-                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Work Sans', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
 
-            input:-webkit-autofill,
-            input:-webkit-autofill:hover,
-            input:-webkit-autofill:focus,
-            input:-webkit-autofill:active {
-                -webkit-box-shadow: 0 0 0 30px white inset !important;
-            }
-        </style>
-    </head>
+        .auth-main {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
 
-    <body class="bg-background text-on-background h-screen overflow-hidden flex font-body-md text-body-md relative">
-        <!-- Left Image Column -->
-        <div class="hidden lg:block lg:w-1/2 relative h-full">
-            <a class="absolute top-8 left-8 flex items-center gap-2 text-white hover:text-gray-200 transition-colors font-body-md z-10 drop-shadow-md"
-                href="<%=request.getContextPath()%>/">
-                <span class="material-symbols-outlined">arrow_back</span>
+        /* ── LEFT PANEL: IMAGE ── */
+        .auth-image-panel {
+            position: relative;
+            flex: 1;
+            display: none; /* Hidden on mobile */
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .auth-image-panel { display: block; }
+        }
+
+        .auth-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05);
+        }
+
+        .auth-back-btn {
+            position: absolute;
+            top: 32px;
+            left: 32px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--on-surface);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        /* ── RIGHT PANEL: FORM ── */
+        .auth-form-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Registration card wrapper to match your screenshot */
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+            background-color: #ffffff;
+            border: 1px solid var(--outline-variant);
+            border-radius: var(--radius);
+            padding: 48px;
+            margin: 40px 0;
+        }
+
+        /* Registration Failed box (pink background) */
+        .auth-error-box {
+            background-color: var(--error-container);
+            border: 1px solid rgba(186, 26, 26, 0.15);
+            padding: 20px;
+            border-radius: var(--radius);
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .auth-error-icon { color: var(--error); font-size: 20px; }
+        .auth-error-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--error);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .auth-error-msg {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--on-surface-variant);
+        }
+
+        /* Typography */
+        .auth-header { margin-bottom: 40px; text-align: center; }
+        .auth-title {
+            font-family: 'Epilogue', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--primary-container);
+            margin-bottom: 12px;
+        }
+        .auth-subtitle {
+            font-size: 16px;
+            color: var(--on-surface-variant);
+        }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--on-surface);
+            margin-bottom: 10px;
+        }
+
+        .form-input-wrapper { position: relative; }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--surface);
+            border: 1px solid var(--outline-variant);
+            border-radius: var(--radius);
+            font-family: 'Work Sans', sans-serif;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus { border-color: var(--primary-container); }
+        
+        .password-toggle-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .auth-submit-btn {
+            width: 100%;
+            background-color: var(--primary-container);
+            color: #ffffff;
+            padding: 18px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'Work Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        /* Footer Text */
+        .auth-footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 15px;
+            color: var(--on-surface-variant);
+        }
+        .auth-link {
+            font-weight: 700;
+            color: var(--primary-container);
+            text-decoration: none;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="auth-main">
+        
+        <!-- Left Side: Himalayan Landscape Imagery -->
+        <div class="auth-image-panel">
+            <a class="auth-back-btn" href="<%=request.getContextPath()%>/">
+                <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
                 Back
             </a>
-            <img alt="Nomadic landscape" class="absolute inset-0 w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH-1LiDteL6-NcIQOHohfU76m9_18Mbjekid-LzV-VLhd17CNLueULD_no1A7CDvXTwt-AEDboV9TW4CjLfrFS8hxAnK8gF7s7u2IDO2ik4AoC4UJYhS4A0f1FKWaSHrGKM_5SCxa5CDGlt_RMl0NsnlNp3AnLh7S0rgcnVTRIW_XJA8xz7MX-IVlF26p4DeQeHJrBQ-RArZq4uTNd98OHfmRKzZNvetJvANgAk55fu2mHYkMFQciBUZHWZiniPKUHZfxUS6xV5I8" />
-            <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+            <!-- New Himalayan Image -->
+            <img alt="High-altitude Himalayan peaks" class="auth-image" src="https://i.pinimg.com/1200x/74/5f/b8/745fb8c273c1efb715fefd59adffe50f.jpg" />
         </div>
-        <!-- Main Content Canvas -->
-        <main
-            class="w-full lg:w-1/2 h-full flex items-center justify-center px-margin-mobile md:px-margin-desktop overflow-y-auto relative py-8">
-            <a class="lg:hidden absolute top-6 left-6 flex items-center gap-2 text-on-surface hover:text-primary transition-colors font-body-md z-10"
-                href="<%=request.getContextPath()%>/">
-                <span class="material-symbols-outlined">arrow_back</span>
-                Back
-            </a>
-            <div
-                class="w-full max-w-[600px] bg-surface-container-lowest rounded-DEFAULT border border-outline-variant p-8 md:p-12 my-auto">
-                <div class="mb-8 text-center">
-                    <h1 class="font-headline-lg text-headline-lg text-primary mb-2">Join Our Community</h1>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Become a contributor and share your
-                        nomadic journeys.</p>
+
+        <!-- Right Side: Registration Canvas -->
+        <div class="auth-form-panel">
+            <div class="auth-card">
+                
+                <div class="auth-header">
+                    <h1 class="auth-title">Join Our Community</h1>
+                    <p class="auth-subtitle">Become a contributor and share your nomadic journeys.</p>
                 </div>
-                <% if (request.getAttribute("error") !=null) { %>
-                    <!-- Validation Message Area -->
-                    <div
-                        class="bg-error-container text-on-error-container p-4 rounded-DEFAULT border border-error mb-8 flex items-start gap-3">
-                        <span class="material-symbols-outlined text-error mt-0.5" data-icon="error">error</span>
+
+                <!-- Registration Feedback (Pink box) -->
+                <% if (request.getAttribute("error") != null) { %>
+                    <div class="auth-error-box">
+                        <span class="material-symbols-outlined auth-error-icon">error</span>
                         <div>
-                            <h3 class="font-label-caps text-label-caps text-error mb-1">Registration Failed</h3>
-                            <p class="font-body-md text-body-md text-on-secondary-fixed">
-                                <%= request.getAttribute("error") %>
-                            </p>
+                            <h3 class="auth-error-title">Registration Failed</h3>
+                            <p class="auth-error-msg"><%= request.getAttribute("error") %></p>
                         </div>
                     </div>
-                    <% } %>
-                        <form action="<%=request.getContextPath()%>/auth/register" method="POST" class="space-y-6">
-                            <!-- Full Name -->
-                            <div>
-                                <label class="block font-label-caps text-label-caps text-on-surface mb-2"
-                                    for="fullName">Full Name</label>
-                                <input
-                                    class="w-full bg-surface border-outline-variant text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md transition-colors"
-                                    id="fullName" name="fullName" type="text" placeholder="John Doe" value="<%= request.getParameter("fullName") != null ? request.getParameter("fullName") : "" %>" />
-                            </div>
-                            <!-- Email -->
-                            <div>
-                                <label class="block font-label-caps text-label-caps text-on-surface mb-2"
-                                    for="email">Email Address</label>
-                                <input
-                                    class="w-full bg-surface border-outline-variant text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md transition-colors"
-                                    id="email" name="email" placeholder="alex@example.com" type="email" value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>" />
-                            </div>
-                            <!-- Contact Number -->
-                            <div>
-                                <label class="block font-label-caps text-label-caps text-on-surface mb-2"
-                                    for="phone">Contact Number</label>
-                                <input
-                                    class="w-full bg-surface border-outline-variant text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md transition-colors"
-                                    id="phone" name="phone" placeholder="+1 (555) 000-0000" type="tel" value="<%= request.getParameter("phone") != null ? request.getParameter("phone") : "" %>" />
-                            </div>
-                            <!-- Password -->
-                            <div>
-                                <label class="block font-label-caps text-label-caps text-on-surface mb-2"
-                                    for="password">Password</label>
-                                <div class="relative">
-                                    <input
-                                        class="w-full bg-surface border-outline-variant text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md transition-colors pr-12"
-                                        id="password" name="password" placeholder="••••••••" type="password" />
-                                    <button
-                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
-                                        type="button"
-                                        onclick="const p=document.getElementById('password'); const i=this.querySelector('span'); if(p.type==='password'){p.type='text';i.innerText='visibility_off';}else{p.type='password';i.innerText='visibility';}">
-                                        <span class="material-symbols-outlined text-[20px]"
-                                            data-icon="visibility">visibility</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Confirm Password -->
-                            <div>
-                                <label class="block font-label-caps text-label-caps text-on-surface mb-2"
-                                    for="confirmPassword">Confirm Password</label>
-                                <div class="relative">
-                                    <input
-                                        class="w-full bg-surface border-outline-variant text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md transition-colors pr-12"
-                                        id="confirmPassword" name="confirmPassword" placeholder="••••••••"
-                                        type="password" />
-                                    <button
-                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
-                                        type="button"
-                                        onclick="const p=document.getElementById('confirmPassword'); const i=this.querySelector('span'); if(p.type==='password'){p.type='text';i.innerText='visibility_off';}else{p.type='password';i.innerText='visibility';}">
-                                        <span class="material-symbols-outlined text-[20px]"
-                                            data-icon="visibility">visibility</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- CTA -->
-                            <div class="pt-4">
-                                <button
-                                    class="w-full bg-primary-container text-on-primary rounded-DEFAULT py-4 font-label-caps text-label-caps uppercase hover:bg-primary transition-colors duration-200"
-                                    type="submit">
-                                    Join as a Contributor
-                                </button>
-                            </div>
-                        </form>
-                        <div class="mt-8 text-center">
-                            <p class="font-body-md text-body-md text-on-surface-variant">
-                                Already a member? <a class="text-primary-container hover:underline font-semibold"
-                                    href="<%=request.getContextPath()%>/auth/login">Sign in here.</a>
-                            </p>
-                        </div>
-            </div>
-        </main>
-    </body>
+                <% } %>
 
-    </html>
+                <form action="<%=request.getContextPath()%>/auth/register" method="POST">
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="fullName">Full Name</label>
+                        <input class="form-input" id="fullName" name="fullName" placeholder="John Doe" 
+                               value="<%= request.getParameter("fullName") != null ? request.getParameter("fullName") : "" %>" required type="text" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input class="form-input" id="email" name="email" placeholder="alex@example.com" 
+                               value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>" required type="email" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Contact Number</label>
+                        <input class="form-input" id="phone" name="phone" placeholder="+1 (555) 000-0000" 
+                               value="<%= request.getParameter("phone") != null ? request.getParameter("phone") : "" %>" required type="tel" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="form-input-wrapper">
+                            <input class="form-input" id="password" name="password" placeholder="••••••••" required type="password" />
+                            <button class="password-toggle-btn" type="button" onclick="const p=document.getElementById('password'); const i=this.querySelector('span'); if(p.type==='password'){p.type='text';i.innerText='visibility_off';}else{p.type='password';i.innerText='visibility';}">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                        <div class="form-input-wrapper">
+                            <input class="form-input" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required type="password" />
+                            <button class="password-toggle-btn" type="button" onclick="const p=document.getElementById('confirmPassword'); const i=this.querySelector('span'); if(p.type==='password'){p.type='text';i.innerText='visibility_off';}else{p.type='password';i.innerText='visibility';}">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="auth-submit-btn" type="submit">
+                        Join as a Contributor
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Already a member?
+                    <a class="auth-link" href="<%=request.getContextPath()%>/auth/login">Sign in here.</a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package com.thoughtsofnomads.util;
+package com.thoughtsofnomads.config;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;

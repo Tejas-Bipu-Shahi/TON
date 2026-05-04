@@ -1,286 +1,363 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-    <!DOCTYPE html>
+<%
+    // Simulated backend logic: If the query is "Atlantis", we show the empty state.
+    String query = request.getParameter("q");
+    if (query == null || query.isEmpty()) query = "Kathmandu";
+    boolean hasResults = !query.equalsIgnoreCase("Atlantis");
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Search Results: "<%= query %>" - Thoughts of Nomads</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <html lang="en">
+    <style>
+        /* ============================================================
+           CSS VARIABLES (Design Tokens)
+           ============================================================ */
+        :root {
+            --primary: #0e193e;
+            --primary-container: #242e54;
+            --on-primary: #ffffff;
+            --secondary: #a23d30;
+            --surface: #f8f9fa;
+            --surface-container-lowest: #ffffff;
+            --surface-container: #edeeef;
+            --surface-variant: #e1e3e4;
+            --on-surface: #191c1d;
+            --on-surface-variant: #45464e;
+            --background: #f8f9fa;
+            --outline: #76767f;
+            --outline-variant: #c6c5cf;
+            --container-max: 1280px;
+            --margin-desktop: 48px;
+            --margin-mobile: 16px;
+            --radius: 4px;
+            --radius-xl: 12px;
+        }
 
-    <head>
-        <meta charset="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Thoughts of Nomads - Search Results: Kathmandu</title>
-        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&amp;family=Work+Sans:wght@400;500;600&amp;display=swap"
-            rel="stylesheet" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-            rel="stylesheet" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-            rel="stylesheet" />
-        <script id="tailwind-config">
-            tailwind.config = {
-                darkMode: "class",
-                theme: {
-                    extend: {
-                        "colors": {
-                            "primary-fixed-dim": "#bbc4f3",
-                            "surface-container-highest": "#e1e3e4",
-                            "on-tertiary-fixed": "#2a1800",
-                            "on-error-container": "#93000a",
-                            "tertiary-fixed": "#ffddb5",
-                            "tertiary": "#2a1800",
-                            "tertiary-fixed-dim": "#ffb957",
-                            "on-tertiary-container": "#d18900",
-                            "surface-container-high": "#e7e8e9",
-                            "surface-container-low": "#f3f4f5",
-                            "on-surface-variant": "#45464e",
-                            "on-primary-fixed-variant": "#3b456c",
-                            "outline": "#76767f",
-                            "secondary-fixed": "#ffdad4",
-                            "on-secondary": "#ffffff",
-                            "surface-tint": "#535c85",
-                            "inverse-surface": "#2e3132",
-                            "surface-container-lowest": "#ffffff",
-                            "primary-fixed": "#dce1ff",
-                            "on-background": "#191c1d",
-                            "inverse-on-surface": "#f0f1f2",
-                            "surface-variant": "#e1e3e4",
-                            "tertiary-container": "#462b00",
-                            "background": "#f8f9fa",
-                            "on-secondary-fixed-variant": "#82261b",
-                            "surface-dim": "#d9dadb",
-                            "outline-variant": "#c6c5cf",
-                            "on-tertiary": "#ffffff",
-                            "surface": "#f8f9fa",
-                            "on-error": "#ffffff",
-                            "surface-bright": "#f8f9fa",
-                            "surface-container": "#edeeef",
-                            "secondary": "#a23d30",
-                            "on-primary-fixed": "#0e193e",
-                            "on-primary": "#ffffff",
-                            "on-secondary-container": "#731a11",
-                            "inverse-primary": "#bbc4f3",
-                            "secondary-fixed-dim": "#ffb4a8",
-                            "error-container": "#ffdad6",
-                            "on-tertiary-fixed-variant": "#643f00",
-                            "on-primary-container": "#8c96c2",
-                            "on-secondary-fixed": "#410000",
-                            "secondary-container": "#fd8270",
-                            "primary-container": "#242e54",
-                            "primary": "#0e193e",
-                            "on-surface": "#191c1d",
-                            "error": "#ba1a1a"
-                        },
-                        "borderRadius": {
-                            "DEFAULT": "0.125rem",
-                            "lg": "0.25rem",
-                            "xl": "0.5rem",
-                            "full": "0.75rem"
-                        },
-                        "spacing": {
-                            "base": "8px",
-                            "margin-desktop": "48px",
-                            "container-max": "1280px",
-                            "margin-mobile": "16px",
-                            "gutter": "24px",
-                            "section-gap": "80px"
-                        },
-                        "fontFamily": {
-                            "label-caps": ["Work Sans"],
-                            "body-lg": ["Work Sans"],
-                            "headline-md": ["Epilogue"],
-                            "display-lg": ["Epilogue"],
-                            "headline-lg": ["Epilogue"],
-                            "body-md": ["Work Sans"]
-                        },
-                        "fontSize": {
-                            "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600" }],
-                            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                            "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
-                            "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                            "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                            "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
-                        }
-                    }
-                }
-            }
-        </script>
-    </head>
+        /* Basic Reset */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background-color: var(--background);
+            color: var(--on-surface);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        button { cursor: pointer; font-family: inherit; }
 
-    <body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
-        <!-- TopNavBar -->
-        <jsp:include page="/WEB-INF/views/includes/header.jsp" />
-        <!-- Main Content Canvas -->
-        <main class="flex-grow flex flex-col">
-            <!-- Header Section -->
-            <section class="w-full bg-surface-container-lowest pt-8 pb-6 border-b border-surface-variant">
-                <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-                    <!-- Breadcrumbs -->
-                    <nav aria-label="Breadcrumb"
-                        class="flex items-center space-x-2 text-on-surface-variant font-label-caps text-[10px] mb-6">
-                        <a class="hover:text-primary transition-colors" href="<%=request.getContextPath()%>/">Home</a>
-                        <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                        <span class="text-primary-container">Search</span>
-                    </nav>
-                    <!-- Headline -->
-                    <div class="mb-6">
-                        <h1 class="font-display-lg text-headline-lg text-on-surface mb-2">Search Results for:
-                            "<%= request.getAttribute("query") != null && !request.getAttribute("query").toString().isEmpty() ? request.getAttribute("query") : "All" %>"</h1>
-                        <p class="font-body-md text-body-md text-on-surface-variant">Showing 12 journeys found</p>
-                    </div>
-                    <!-- Refiner Bar -->
-                    <div
-                        class="flex flex-col md:flex-row items-center justify-between gap-3 bg-surface rounded-lg p-3 border border-outline-variant">
-                        <form action="<%=request.getContextPath()%>/search" method="GET" class="relative w-full md:w-1/3">
-                            <span
-                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
-                            <input name="q"
-                                class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded font-body-md text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                                placeholder="Search journeys..." type="text" value="<%= request.getAttribute("query") != null ? request.getAttribute("query") : "" %>" />
-                        </form>
-                        <div class="flex w-full md:w-auto space-x-3">
-                            <div class="relative w-full md:w-40">
-                                <select
-                                    class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded pl-3 pr-8 py-2 font-body-md text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer">
-                                    <option>Most Relevant</option>
-                                    <option>Newest First</option>
-                                    <option>Most Read</option>
-                                </select>
-                                <span
-                                    class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">expand_more</span>
-                            </div>
-                            <div class="relative w-full md:w-40">
-                                <select
-                                    class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded pl-3 pr-8 py-2 font-body-md text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer">
-                                    <option>All Authors</option>
-                                    <option>Sarah Jenkins</option>
-                                    <option>David Chen</option>
-                                    <option>Elena Rodriguez</option>
-                                </select>
-                                <span
-                                    class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">filter_list</span>
-                            </div>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* ============================================================
+           SEARCH PAGE LAYOUT
+           ============================================================ */
+        .search-layout { display: flex; flex-direction: column; min-height: 100vh; }
+        .search-main { flex-grow: 1; }
+
+        .search-container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 var(--margin-mobile);
+        }
+        @media (min-width: 768px) {
+            .search-container { padding: 0 var(--margin-desktop); }
+        }
+
+        /* Header Section */
+        .search-header-section {
+            background-color: var(--surface-container-lowest);
+            padding: 32px 0 24px 0;
+            border-bottom: 1px solid var(--surface-variant);
+        }
+
+        .breadcrumbs {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: var(--on-surface-variant);
+            margin-bottom: 24px;
+        }
+        .breadcrumbs a:hover { color: var(--primary); text-decoration: underline; }
+        .breadcrumb-icon { font-size: 14px; }
+
+        .search-headline { margin-bottom: 24px; }
+        .search-title {
+            font-family: 'Epilogue', sans-serif;
+            font-size: 32px; font-weight: 600; margin-bottom: 8px;
+        }
+        .search-subtitle { font-size: 16px; color: var(--on-surface-variant); }
+
+        /* Refiner Bar */
+        .search-refiner-bar {
+            display: flex; flex-direction: column; gap: 12px;
+            background-color: var(--surface);
+            border: 1px solid var(--surface-variant);
+            border-radius: var(--radius); padding: 12px;
+        }
+        @media (min-width: 768px) {
+            .search-refiner-bar { flex-direction: row; align-items: center; justify-content: space-between; }
+        }
+
+        .search-form { position: relative; width: 100%; }
+        @media (min-width: 768px) { .search-form { width: 40%; } }
+
+        .search-input-icon {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--on-surface-variant); font-size: 20px;
+        }
+        .search-input {
+            width: 100%; padding: 12px 12px 12px 40px;
+            background-color: var(--surface-container-lowest);
+            border: 1px solid var(--outline-variant); border-radius: var(--radius);
+            font-family: 'Work Sans', sans-serif; font-size: 14px; color: var(--on-surface);
+            outline: none; transition: border-color 0.2s ease;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        .search-filters { display: flex; gap: 12px; width: 100%; }
+        @media (min-width: 768px) { .search-filters { width: auto; } }
+
+        .filter-dropdown-wrapper { position: relative; width: 100%; }
+        @media (min-width: 768px) { .filter-dropdown-wrapper { width: 180px; } }
+
+        .filter-select {
+            width: 100%; appearance: none;
+            background-color: var(--surface-container-lowest);
+            border: 1px solid var(--outline-variant); border-radius: var(--radius);
+            padding: 12px 32px 12px 12px; font-size: 14px;
+            color: var(--on-surface); outline: none; cursor: pointer;
+        }
+        .filter-icon {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--on-surface-variant); font-size: 20px; pointer-events: none;
+        }
+
+        /* Results Section */
+        .search-results-section { padding: 40px 0; }
+        
+        .article-grid {
+            display: grid; grid-template-columns: 1fr; gap: 24px;
+        }
+        @media (min-width: 768px) {
+            .article-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Reusable Card (From Index) */
+        .article-card {
+            border: 1px solid var(--surface-variant); border-radius: var(--radius);
+            background-color: var(--surface-container-lowest); cursor: pointer;
+            transition: box-shadow 0.3s ease; display: flex; flex-direction: column;
+        }
+        .article-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .card-image-wrapper {
+            width: 100%; height: 200px; overflow: hidden; position: relative;
+            border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);
+        }
+        .card-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .article-card:hover .card-image { transform: scale(1.05); }
+
+        .card-tag-overlay {
+            position: absolute; top: 12px; left: 12px;
+            background-color: rgba(255, 255, 255, 0.95); padding: 4px 8px; border-radius: var(--radius);
+            font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--on-surface);
+        }
+
+        .card-content { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title { font-family: 'Epilogue', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+        .card-excerpt { font-size: 14px; color: var(--on-surface-variant); line-height: 1.5; }
+        .card-meta { margin-top: auto; padding-top: 16px; font-size: 12px; color: var(--outline); }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 48px; }
+        .page-btn, .page-num {
+            background: none; border: 1px solid var(--outline-variant); color: var(--on-surface-variant);
+            padding: 8px 12px; border-radius: var(--radius); transition: all 0.2s ease;
+        }
+        .page-btn { text-transform: uppercase; font-weight: 600; font-size: 12px; letter-spacing: 0.1em; }
+        .page-btn:hover, .page-num:hover { background-color: var(--surface-variant); color: var(--on-surface); }
+        .page-num.active { background-color: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+
+        /* Empty State */
+        .empty-state-wrapper { display: flex; justify-content: center; margin-bottom: 64px; }
+        .empty-card {
+            background-color: var(--surface-container-lowest); border: 1px solid var(--surface-variant);
+            border-radius: var(--radius-xl); padding: 48px; max-width: 500px; text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .empty-icon-wrapper {
+            background-color: var(--surface-container); width: 64px; height: 64px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: var(--on-surface-variant); margin-bottom: 24px;
+        }
+        .empty-title { font-family: 'Epilogue', sans-serif; font-size: 24px; font-weight: 600; margin-bottom: 12px; }
+        .empty-subtitle { color: var(--on-surface-variant); margin-bottom: 24px; }
+        
+        .btn-solid {
+            background-color: var(--primary); color: var(--on-primary); border: none;
+            padding: 12px 24px; border-radius: var(--radius); font-weight: 600; text-transform: uppercase;
+            font-size: 12px; letter-spacing: 0.1em; display: inline-flex; align-items: center; gap: 8px;
+        }
+
+        /* Suggested Paths */
+        .suggested-paths-wrapper { text-align: center; }
+        .suggested-title { font-family: 'Epilogue', sans-serif; font-size: 24px; font-weight: 600; margin-bottom: 32px; }
+        .suggested-card { position: relative; border-radius: var(--radius-xl); overflow: hidden; height: 200px; }
+        .suggested-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .suggested-card:hover img { transform: scale(1.05); }
+        .suggested-overlay {
+            position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex; align-items: flex-end; padding: 24px;
+        }
+        .suggested-overlay h4 { color: #ffffff; font-family: 'Epilogue', sans-serif; font-size: 24px; }
+    </style>
+</head>
+
+<body class="search-layout">
+    <jsp:include page="/WEB-INF/views/includes/header.jsp" />
+    
+    <main class="search-main">
+        <section class="search-header-section">
+            <div class="search-container">
+                <nav class="breadcrumbs">
+                    <a href="<%=request.getContextPath()%>/">Home</a>
+                    <span class="material-symbols-outlined breadcrumb-icon">chevron_right</span>
+                    <span>Search</span>
+                </nav>
+                
+                <div class="search-headline">
+                    <h1 class="search-title">Search Results for: "<%= query %>"</h1>
+                    <p class="search-subtitle">Showing <%= hasResults ? "12" : "0" %> journeys found</p>
+                </div>
+                
+                <div class="search-refiner-bar">
+                    <form action="<%=request.getContextPath()%>/search" method="GET" class="search-form">
+                        <span class="material-symbols-outlined search-input-icon">search</span>
+                        <input name="q" class="search-input" placeholder="Search journeys..." type="text" value="<%= query %>" />
+                    </form>
+                    <div class="search-filters">
+                        <div class="filter-dropdown-wrapper">
+                            <select class="filter-select">
+                                <option>Most Relevant</option>
+                                <option>Newest First</option>
+                                <option>Most Read</option>
+                            </select>
+                            <span class="material-symbols-outlined filter-icon">expand_more</span>
+                        </div>
+                        <div class="filter-dropdown-wrapper">
+                            <select class="filter-select">
+                                <option>All Authors</option>
+                                <option>Sarah Jenkins</option>
+                                <option>David Chen</option>
+                                <option>Elena Rodriguez</option>
+                            </select>
+                            <span class="material-symbols-outlined filter-icon">filter_list</span>
                         </div>
                     </div>
                 </div>
-            </section>
-            <!-- Results Grid -->
-            <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Card 1 -->
-                    <article
-                        class="group flex flex-col bg-surface-container-lowest border border-surface-variant rounded overflow-hidden hover:shadow-[0px_4px_20px_rgba(36,46,84,0.05)] transition-shadow duration-300">
-                        <div class="w-full aspect-video bg-surface-container relative overflow-hidden">
-                            <img alt="Kathmandu cityscape"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                data-alt="A sweeping, slightly desaturated view of the Kathmandu valley at dawn. Intricate, ancient temple rooftops rise above the morning mist, framed by distant, towering Himalayan peaks. The scene is illuminated by soft, cool morning light, perfectly aligning with a modern, high-contrast, premium editorial photography aesthetic used in luxury travel magazines."
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVCdiSqEKC_l4pD9kjBBqEUvxjuBn66w4DtQXsqmXxwKzQjtmPsv-n56hDRzN6taylqcFeed8J93MacG3G_fsABCJh5TllzWubz_jsb9T_pcdmn9bPZ8sqcoVlRGnSSZmRLTrXHwrjXAZzA8cK30pulYlq0ZfL3wSUpgC_lvj2kXWvq0-g-xsIv0VZKGiS_Z0-94EXNnH3dRj2UPnSdm8p2gb0HiH0J6noSimzQBBIbVz7SDrjRatKNqVPJHuJ2EBNjrH5UVU_uqw" />
-                            <div
-                                class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded text-on-surface font-label-caps text-[10px] shadow-sm">
-                                #SlowTravel
+            </div>
+        </section>
+        
+        <section class="search-results-section">
+            <div class="search-container">
+                
+                <% if (hasResults) { %>
+                    <!-- STATE 1: RESULTS FOUND -->
+                    <div class="article-grid">
+                        <article class="article-card">
+                            <div class="card-image-wrapper">
+                                <img alt="Kathmandu cityscape" class="card-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVCdiSqEKC_l4pD9kjBBqEUvxjuBn66w4DtQXsqmXxwKzQjtmPsv-n56hDRzN6taylqcFeed8J93MacG3G_fsABCJh5TllzWubz_jsb9T_pcdmn9bPZ8sqcoVlRGnSSZmRLTrXHwrjXAZzA8cK30pulYlq0ZfL3wSUpgC_lvj2kXWvq0-g-xsIv0VZKGiS_Z0-94EXNnH3dRj2UPnSdm8p2gb0HiH0J6noSimzQBBIbVz7SDrjRatKNqVPJHuJ2EBNjrH5UVU_uqw" />
+                                <div class="card-tag-overlay">#SlowTravel</div>
                             </div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h2
-                                class="font-headline-md text-[18px] leading-snug text-on-surface mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                                Finding Stillness in the Chaos of <span class="font-bold">Kathmandu</span></h2>
-                            <p
-                                class="font-body-md text-[13px] leading-relaxed text-on-surface-variant mb-5 line-clamp-2 flex-grow">
-                                Navigating the labyrinthine streets of Thamel reveals hidden courtyards and ancient
-                                stupas that demand a slower pace of exploration.</p>
-                            <div class="flex items-center mt-auto pt-3 border-t border-surface-variant">
-                                <img alt="Author" class="w-6 h-6 rounded-full object-cover mr-2"
-                                    data-alt="A high-quality, professional headshot of a female travel writer. She has a natural, confident expression, shot against a clean, out-of-focus urban background. The lighting is soft and flattering, matching the sophisticated, slightly desaturated editorial style of the overall design system."
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs3XWoOclZ2Qa_7R0q0A6MhC9OdHbRmKTI0rxKtB8h_mzFiOhaEG4mY90RzT5EYsvniU4HtHAP04vPs3zNJTwLLvwVqKsgUXMEyZ-N0q5SVuElVSSgEwJaSToJacsHjqEu6bQ1aB1MjcK7hCc91mWapVuhq9I-itVlmEtyyi6VCJOQT7BGenMjc4qqAaOxQDR5Y_AiJP7aTu9EgbcbW7r9B_BAPUNx-9k2qEsdelB_c_iIXMc0DqH6BG1rxEZ2dw_5gCuMw3xZWhg" />
-                                <span class="font-label-caps text-[10px] text-on-surface-variant">Sarah Jenkins • Oct
-                                    12, 2023</span>
+                            <div class="card-content">
+                                <h2 class="card-title">Finding Stillness in the Chaos of Kathmandu</h2>
+                                <p class="card-excerpt">Navigating the labyrinthine streets of Thamel reveals hidden courtyards and ancient stupas that demand a slower pace of exploration.</p>
+                                <p class="card-meta">Sarah Jenkins • Oct 12, 2026</p>
                             </div>
-                        </div>
-                    </article>
-                    <!-- Card 2 -->
-                    <article
-                        class="group flex flex-col bg-surface-container-lowest border border-surface-variant rounded overflow-hidden hover:shadow-[0px_4px_20px_rgba(36,46,84,0.05)] transition-shadow duration-300">
-                        <div class="w-full aspect-video bg-surface-container relative overflow-hidden">
-                            <img alt="Swayambhunath Stupa"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                data-alt="A close-up, highly detailed photograph of the iconic golden spire and painted eyes of the Swayambhunath Stupa in Nepal. Prayer flags flutter across the composition in sharp focus against a clear blue sky. The image features high contrast and slightly muted tones, characteristic of high-end, contemporary travel journalism."
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0sdQI7FlSqJ2Ezdvy8DlCxmdNW404PLjWgGj3Rw_lbMpOP2XyfQDZMTzo1JampbRGvt4d-elrvgkFc8GaH92GRMb8OXNMA5SRLhdCIAjpJxuc6nCZ9Jg_Rpa-1U7ncv-sI8QivrZw0ZyyOVDj3J57GRjFW12Xxg5izwjPwzeDVYCB7uCppKEt5QWzKP6TK52jYxaapynBYLpMfUkkxP8VMlcnxlEN4OjTiFKYahVsQxbQXTekbtUvsNBZNpT7KX_wMlK5GuMDyBw" />
-                            <div
-                                class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded text-on-surface font-label-caps text-[10px] shadow-sm">
-                                #Heritage
-                            </div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h2
-                                class="font-headline-md text-[18px] leading-snug text-on-surface mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                                The Monkey Temple: A <span class="font-bold">Kathmandu</span> Sunrise</h2>
-                            <p
-                                class="font-body-md text-[13px] leading-relaxed text-on-surface-variant mb-5 line-clamp-2 flex-grow">
-                                Ascending the 365 steps before dawn offers a rare moment of clarity amidst the spinning
-                                prayer wheels and chanting monks.</p>
-                            <div class="flex items-center mt-auto pt-3 border-t border-surface-variant">
-                                <img alt="Author" class="w-6 h-6 rounded-full object-cover mr-2"
-                                    data-alt="A portrait of a male photographer in a neutral, modern setting. He wears a simple dark shirt. The image is sharply focused with a shallow depth of field, utilizing a refined, professional color grade suitable for an authoritative editorial platform."
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCo6sQYvtjbebiRcn94XX96ddkzklMfFIW9NdgYRQafLMpGJA9o5lKf8rL0UPOAtuRFgb-tdf-qbv90dI4qRbKvho67_6i3cUKmzAM69ZqFFIx2TiyBKV93yrjF-4EG1DSHue33tWwYIQI9byYs8nbbGDp0TPyRiWgKntlj0HoncIxmkWjQSFQBGJPCy0U6n6OMkwp6JP5vddDRswEr9CMJ8yQlWfi-VQX9-vl-t3syVHSXJejFu1iomE0SM4jsAaUlBFQDu8qgJI8" />
-                                <span class="font-label-caps text-[10px] text-on-surface-variant">David Chen • Sep 28,
-                                    2023</span>
-                            </div>
-                        </div>
-                    </article>
-                    <!-- Card 3 -->
-                    <article
-                        class="group flex flex-col bg-surface-container-lowest border border-surface-variant rounded overflow-hidden hover:shadow-[0px_4px_20px_rgba(36,46,84,0.05)] transition-shadow duration-300">
-                        <div class="w-full aspect-video bg-surface-container relative overflow-hidden">
-                            <img alt="Digital Nomad Cafe"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                data-alt="An interior shot of a sophisticated, modern cafe in an ancient city setting. A laptop sits on a rough-hewn wooden table beside a steaming cup of artisan coffee. The lighting is moody and natural, highlighting textures and deep shadows, emphasizing a premium, focused digital nomad lifestyle aesthetic."
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi2caFkp4nmbuM5Dr_iM9GCyVfz1k78KrhERk9_MZRlQHHyr_X9-Z48-tNZLuKNkdvQSPbF5lVcJWKFFEK5bR7JygYhtYzNOSBwS5Ps9-s6T8Av9XsNXDk7pygM8B-1GZZi5q4mT2XaGqHBaGaljR0vi1WZdCn2_pWmY4DsS8d981EqnjREGu5-wKstreiYQronkCE-KZ1ytY_piFolgxfHvSGwbTs9X3KnrjJS7lxLtJgluiVxITnwXwNOudX0f_c7wShA7w3b3M" />
-                            <div
-                                class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm px-2 py-1 rounded text-on-surface font-label-caps text-[10px] shadow-sm">
-                                #RemoteWork
-                            </div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-grow">
-                            <h2
-                                class="font-headline-md text-[18px] leading-snug text-on-surface mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                                Working Remotely from <span class="font-bold">Kathmandu</span>: A Guide</h2>
-                            <p
-                                class="font-body-md text-[13px] leading-relaxed text-on-surface-variant mb-5 line-clamp-2 flex-grow">
-                                Overcoming infrastructure challenges to find the perfect blend of productivity and
-                                profound cultural immersion in the valley.</p>
-                            <div class="flex items-center mt-auto pt-3 border-t border-surface-variant">
-                                <img alt="Author" class="w-6 h-6 rounded-full object-cover mr-2"
-                                    data-alt="A clean, minimalist headshot of a female author with an understated, elegant look. The lighting is even and cool, set against a stark white background. The visual tone aligns with a disciplined, high-end editorial brand focused on clarity and professionalism."
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK5iixv9wSOKvt3LdUF-cXNTW8he9O5Z7LFUTAKTHB0VLAMRpXVVhaa0VTN-ZoxC7rhLABs2Xkb0UPpKMZeVSxvRs598II7saNDTxXUgUfpn1-7pytXqOspU-BnRGsu9U8woHSp05NskDUVPohadWQWlpvjhOchA2w323cSVKB9NmwjK5iYmerIzkv2O2yTpKeG-XC3QSE-ClqZKTW3zJutWrgQLDQhKt5Dxu-ZQPzANNzVN6AiKyiZ13Lf31tH5m3I4iBhuZCvks" />
-                                <span class="font-label-caps text-[10px] text-on-surface-variant">Elena Rodriguez • Aug
-                                    15, 2023</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <!-- Pagination -->
-                <div class="mt-12 flex justify-center items-center space-x-2">
-                    <button
-                        class="px-3 py-1.5 border border-outline-variant rounded font-label-caps text-[11px] text-on-surface-variant hover:text-primary hover:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
-                    <div class="hidden sm:flex space-x-1">
-                        <button
-                            class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary font-label-caps text-[11px]">1</button>
-                        <button
-                            class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:border-outline-variant text-on-surface font-label-caps text-[11px] transition-all">2</button>
-                        <button
-                            class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:border-outline-variant text-on-surface font-label-caps text-[11px] transition-all">3</button>
-                        <span
-                            class="w-8 h-8 flex items-center justify-center text-on-surface-variant text-[11px]">...</span>
-                        <button
-                            class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:border-outline-variant text-on-surface font-label-caps text-[11px] transition-all">10</button>
-                    </div>
-                    <button
-                        class="px-3 py-1.5 border border-outline-variant rounded font-label-caps text-[11px] text-on-surface-variant hover:text-primary hover:border-primary transition-colors">Next</button>
-                </div>
-            </section>
-        </main>
-        <!-- Footer -->
-        <jsp:include page="/WEB-INF/views/includes/footer.jsp" />
-    </body>
+                        </article>
 
-    </html>
+                        <article class="article-card">
+                            <div class="card-image-wrapper">
+                                <img alt="Swayambhunath Stupa" class="card-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0sdQI7FlSqJ2Ezdvy8DlCxmdNW404PLjWgGj3Rw_lbMpOP2XyfQDZMTzo1JampbRGvt4d-elrvgkFc8GaH92GRMb8OXNMA5SRLhdCIAjpJxuc6nCZ9Jg_Rpa-1U7ncv-sI8QivrZw0ZyyOVDj3J57GRjFW12Xxg5izwjPwzeDVYCB7uCppKEt5QWzKP6TK52jYxaapynBYLpMfUkkxP8VMlcnxlEN4OjTiFKYahVsQxbQXTekbtUvsNBZNpT7KX_wMlK5GuMDyBw" />
+                                <div class="card-tag-overlay">#Heritage</div>
+                            </div>
+                            <div class="card-content">
+                                <h2 class="card-title">The Monkey Temple: A Kathmandu Sunrise</h2>
+                                <p class="card-excerpt">Ascending the 365 steps before dawn offers a rare moment of clarity amidst the spinning prayer wheels and chanting monks.</p>
+                                <p class="card-meta">David Chen • Sep 28, 2026</p>
+                            </div>
+                        </article>
+
+                        <article class="article-card">
+                            <div class="card-image-wrapper">
+                                <img alt="Digital Nomad Cafe" class="card-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi2caFkp4nmbuM5Dr_iM9GCyVfz1k78KrhERk9_MZRlQHHyr_X9-Z48-tNZLuKNkdvQSPbF5lVcJWKFFEK5bR7JygYhtYzNOSBwS5Ps9-s6T8Av9XsNXDk7pygM8B-1GZZi5q4mT2XaGqHBaGaljR0vi1WZdCn2_pWmY4DsS8d981EqnjREGu5-wKstreiYQronkCE-KZ1ytY_piFolgxfHvSGwbTs9X3KnrjJS7lxLtJgluiVxITnwXwNOudX0f_c7wShA7w3b3M" />
+                                <div class="card-tag-overlay">#RemoteWork</div>
+                            </div>
+                            <div class="card-content">
+                                <h2 class="card-title">Working Remotely from Kathmandu: A Guide</h2>
+                                <p class="card-excerpt">Overcoming infrastructure challenges to find the perfect blend of productivity and profound cultural immersion in the valley.</p>
+                                <p class="card-meta">Elena Rodriguez • Aug 15, 2026</p>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="pagination">
+                        <button class="page-btn">Previous</button>
+                        <button class="page-num active">1</button>
+                        <button class="page-num">2</button>
+                        <button class="page-num">3</button>
+                        <span class="page-dots">...</span>
+                        <button class="page-num">10</button>
+                        <button class="page-btn">Next</button>
+                    </div>
+
+                <% } else { %>
+                    <!-- STATE 2: EMPTY RESULTS -->
+                    <div class="empty-state-wrapper">
+                        <div class="empty-card">
+                            <div class="empty-icon-wrapper">
+                                <span class="material-symbols-outlined" style="font-size: 28px;">location_off</span>
+                            </div>
+                            <h2 class="empty-title">Journey Not Found</h2>
+                            <p class="empty-subtitle">Sorry, that journey hasn't been written yet. The coordinates for "<%= query %>" remain uncharted in our archives.</p>
+                            <a href="<%=request.getContextPath()%>/" class="btn-solid">
+                                <span class="material-symbols-outlined" style="font-size: 16px;">home</span>
+                                Return to Home
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="suggested-paths-wrapper">
+                        <h3 class="suggested-title">Perhaps explore these paths instead:</h3>
+                        <div class="article-grid">
+                            <div class="suggested-card">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx0KvZtVOsZeiePSzu3IW7UmdrLENlMC0OFKAKdfmzAOFE363Enj_leN19hImv4ifwFCoSojk2Jb2Hm69Wb6_52yqHhq8UhojRpelj_gPTcD5hn8-eYglCk_3UxR9gnW9ZELHwdxdBaAaW2L-4GwjOruJ2r8nhWNhIlbvG9WlN0AjXAHiXBaP3aQXg5hTMmEAw9ECdHwfUT9EngIGWnDh6ht1q3vT4IlSbamk2KGwPx76VNAkSm8QO8UKAww378qTRAUoMEqv81jw" alt="Trekking" />
+                                <div class="suggested-overlay"><h4>Trekking</h4></div>
+                            </div>
+                            <div class="suggested-card">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG6EfvItlcdTwuTI3nRR1-Lp7u1bmz4J-btTxf86e5edif2q3xaYvD1hM_Q7I8nQDQekdaItcpgx4zykw8XSv2-ed3DsFaWEpbFVjPWLf8hCvfMDrFzaKhgux8SjyslvWSNZl5UoJ-vXWT7Pc76Xm_T_LkFVV9QrwmPCRfA2w08saQmUHeU2gLMnXBmRXAi8x-t6aPM3aFP1GQZ_KFn7uPlrvyXrzSFGoGkWfuviYGAWNblw39KA88SAf_D35ty_do3MZ0HXXDSD0" alt="Solo" />
+                                <div class="suggested-overlay"><h4>Solo</h4></div>
+                            </div>
+                            <div class="suggested-card">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqu4evWJbrSTEqWxv9z3ix6M_VZ0rkxg_r99jSozaDrVHTuuuHVeELv85ZBOnvGbhT4O2_0xM62TUkC_aqwahR23bMrD3kN1pz0MY-GG6XqKaYokvE-HYcmX4p7kS3uuUwsiQoqZxJ-FxdfzwibqFWsO5C4FSIYBcDh_a35SnItm4yqV2wn-RNjXrdqOO8iJrqWFP3HHqFi1kuYuY2327Zb91nFUSdE_zzxOFKw8GpiSettbJO4tofTH3lRD1t9VlNMAGv6cRLi40" alt="Culture" />
+                                <div class="suggested-overlay"><h4>Culture</h4></div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+                
+            </div>
+        </section>
+    </main>
+    
+    <jsp:include page="/WEB-INF/views/includes/footer.jsp" />
+</body>
+</html>
