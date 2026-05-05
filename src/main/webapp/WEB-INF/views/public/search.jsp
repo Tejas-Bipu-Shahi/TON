@@ -11,7 +11,6 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Search Results: "<%= query %>" - Thoughts of Nomads</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />

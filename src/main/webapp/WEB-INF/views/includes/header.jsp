@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.thoughtsofnomads.model.User, com.thoughtsofnomads.model.Role" %>
 
 <style>
     /* Header Specific CSS */
@@ -117,8 +118,14 @@
 
         <!-- Auth Navigation (Desktop) -->
         <div class="header-auth">
-            <% if (session.getAttribute("user") != null) { %>
-                <a href="<%=request.getContextPath()%>/dashboard" class="btn btn-outline">Dashboard</a>
+            <%
+                User _hUser = (User) session.getAttribute("user");
+                if (_hUser != null) {
+                    String _dashUrl = (_hUser.getRole() == Role.ADMIN)
+                        ? request.getContextPath() + "/admin/dashboard"
+                        : request.getContextPath() + "/member/dashboard";
+            %>
+                <a href="<%= _dashUrl %>" class="btn btn-outline">Dashboard</a>
                 <a href="<%=request.getContextPath()%>/auth/logout" class="btn btn-solid">Logout</a>
             <% } else { %>
                 <a href="<%=request.getContextPath()%>/auth/login" class="btn btn-outline">Sign In</a>
