@@ -2,6 +2,7 @@ package com.thoughtsofnomads.controller;
 
 import com.thoughtsofnomads.dao.UserDAO;
 import com.thoughtsofnomads.model.AccountStatus;
+import com.thoughtsofnomads.model.Role;
 import com.thoughtsofnomads.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -42,10 +43,11 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            // Successful login
+            // Successful login — route by role
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            response.sendRedirect(request.getContextPath() + "/dashboard");
+            String redirect = user.getRole() == Role.ADMIN ? "/admin/dashboard" : "/member/dashboard";
+            response.sendRedirect(request.getContextPath() + redirect);
 
         } else {
             request.setAttribute("error", "Invalid email or password.");
