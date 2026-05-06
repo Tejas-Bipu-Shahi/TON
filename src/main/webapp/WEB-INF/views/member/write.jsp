@@ -565,7 +565,7 @@ const quill = new Quill('#quillEditor', {
     }
 });
 
-// Custom image handler: convert to base64 (no server upload for inline images)
+// Custom image handler: upload to server, insert URL (not base64)
 quill.getModule('toolbar').addHandler('image', function() {
     const input = document.createElement('input');
     input.type = 'file';
@@ -574,12 +574,31 @@ quill.getModule('toolbar').addHandler('image', function() {
     input.addEventListener('change', function() {
         const file = input.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const range = quill.getSelection(true);
-            quill.insertEmbed(range.index, 'image', e.target.result);
-        };
-        reader.readAsDataURL(file);
+        const range = quill.getSelection(true);
+
+        // Temporary placeholder while uploading
+        quill.insertText(range.index, 'Uploading image…', { italic: true, color: '#9b9ea4' });
+        quill.setSelection(range.index + 18);
+
+        const form = new FormData();
+        form.append('image', file);
+
+        fetch('<%=cp%>/member/upload/image', { method: 'POST', body: form })
+            .then(res => res.json())
+            .then(data => {
+                // Remove placeholder text, insert the real image
+                quill.deleteText(range.index, 18);
+                if (data.url) {
+                    quill.insertEmbed(range.index, 'image', data.url);
+                    quill.setSelection(range.index + 1);
+                } else {
+                    alert('Image upload failed: ' + (data.error || 'unknown error'));
+                }
+            })
+            .catch(() => {
+                quill.deleteText(range.index, 18);
+                alert('Image upload failed. Please try again.');
+            });
     });
 });
 

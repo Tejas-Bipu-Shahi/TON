@@ -409,7 +409,7 @@
                                     <%= art.getUpdatedAt() != null ? dateFmt.format(art.getUpdatedAt()) : "—" %>
                                 </td>
                                 <td>
-                                    <a href="<%= cp %>/member/articles/edit/<%= art.getArticleId() %>"
+                                    <a href="<%= cp %>/member/articles/edit?id=<%= art.getArticleId() %>"
                                        class="btn-table-action" title="Edit">
                                         <span class="material-symbols-outlined">edit</span>
                                     </a>

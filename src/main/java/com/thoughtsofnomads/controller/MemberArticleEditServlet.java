@@ -30,23 +30,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@WebServlet("/member/articles/new")
+@WebServlet("/member/articles/edit")
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 10 * 1024 * 1024)
-public class MemberArticleServlet extends HttpServlet {
+public class MemberArticleEditServlet extends HttpServlet {
 
+    private final ArticleDAO  articleDAO  = new ArticleDAO();
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final TagDAO      tagDAO      = new TagDAO();
-    private final ArticleDAO  articleDAO  = new ArticleDAO();
     private final UserDAO     userDAO     = new UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         User user = (User) request.getSession(false).getAttribute("user");
+        Article article = resolveArticle(request, response, user);
+        if (article == null) return;
+
         User fullUser = userDAO.getUserById(user.getUserId());
         if (fullUser != null) request.setAttribute("userProfile", fullUser.getProfile());
+
+        List<Integer> savedTagIds = articleDAO.getTagIdsByArticle(article.getArticleId());
+
+        request.setAttribute("article", article);
+        request.setAttribute("savedTagIds", savedTagIds);
         loadFormData(request);
-        request.getRequestDispatcher("/WEB-INF/views/member/write.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/member/edit.jsp").forward(request, response);
     }
 
     @Override
@@ -54,6 +63,8 @@ public class MemberArticleServlet extends HttpServlet {
             throws ServletException, IOException {
 
         User user = (User) request.getSession(false).getAttribute("user");
+        Article existing = resolveArticle(request, response, user);
+        if (existing == null) return;
 
         String title         = request.getParameter("title");
         String content       = request.getParameter("content");
@@ -61,39 +72,36 @@ public class MemberArticleServlet extends HttpServlet {
         String tagIdsStr     = request.getParameter("tagIds");
         String action        = request.getParameter("action"); // "draft" or "submit"
 
-        // Validate required fields
         if (isBlank(title) || isBlank(content) || isBlank(categoryIdStr)) {
+            request.setAttribute("article", existing);
+            request.setAttribute("savedTagIds", articleDAO.getTagIdsByArticle(existing.getArticleId()));
             request.setAttribute("errorMsg", "Title, content, and category are required.");
             request.setAttribute("formTitle", title);
             request.setAttribute("formContent", content);
             request.setAttribute("formCategoryId", categoryIdStr);
-            request.setAttribute("formTagIds", tagIdsStr);
             loadFormData(request);
-            request.getRequestDispatcher("/WEB-INF/views/member/write.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/member/edit.jsp").forward(request, response);
             return;
         }
 
-        // Handle cover image upload
-        String coverImagePath = null;
+        // Optional new cover image
+        String newCoverPath = null;
         try {
             Part coverPart = request.getPart("coverImage");
             if (coverPart != null && coverPart.getSize() > 0) {
-                String uploadsDir = getServletContext().getRealPath("")
-                        + File.separator + "uploads" + File.separator + "covers";
+                String uploadsDir = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "covers";
                 Files.createDirectories(Paths.get(uploadsDir));
                 String originalName = coverPart.getSubmittedFileName();
                 String ext = (originalName != null && originalName.contains("."))
-                        ? originalName.substring(originalName.lastIndexOf('.'))
-                        : ".jpg";
+                        ? originalName.substring(originalName.lastIndexOf('.')) : ".jpg";
                 String filename = UUID.randomUUID().toString() + ext;
                 try (InputStream in = coverPart.getInputStream()) {
                     Files.copy(in, Paths.get(uploadsDir, filename), StandardCopyOption.REPLACE_EXISTING);
                 }
-                coverImagePath = "uploads/covers/" + filename;
+                newCoverPath = "uploads/covers/" + filename;
             }
         } catch (Exception ignored) {}
 
-        // Parse tag IDs
         List<Integer> tagIds = new ArrayList<>();
         if (!isBlank(tagIdsStr)) {
             for (String s : tagIdsStr.split(",")) {
@@ -104,56 +112,70 @@ public class MemberArticleServlet extends HttpServlet {
             }
         }
 
-        // Build article
-        Article article = new Article();
-        article.setAuthorId(user.getUserId());
-        article.setCategoryId(Integer.parseInt(categoryIdStr.trim()));
-        article.setTitle(title.trim());
-        article.setContent(content);
-        article.setStatus("submit".equals(action) ? "PENDING" : "DRAFT");
-        article.setCoverImage(coverImagePath);
+        Article updated = new Article();
+        updated.setArticleId(existing.getArticleId());
+        updated.setAuthorId(user.getUserId());
+        updated.setCategoryId(Integer.parseInt(categoryIdStr.trim()));
+        updated.setTitle(title.trim());
+        updated.setContent(content);
+        updated.setStatus("submit".equals(action) ? "PENDING" : "DRAFT");
+        updated.setCoverImage(newCoverPath); // null = keep existing (handled in DAO)
 
-        int newId = articleDAO.createArticle(article, tagIds);
-        if (newId > 0) {
+        boolean ok = articleDAO.updateArticle(updated, tagIds);
+        if (ok) {
             String msg = "submit".equals(action)
-                    ? "Article submitted for review. We'll notify you once it's approved."
+                    ? "Article resubmitted for review."
                     : "Draft saved successfully.";
             request.getSession().setAttribute("flashSuccess", msg);
-            response.sendRedirect(request.getContextPath() + "/member/dashboard");
+            response.sendRedirect(request.getContextPath() + "/member/articles");
         } else {
+            request.setAttribute("article", existing);
+            request.setAttribute("savedTagIds", tagIds);
             request.setAttribute("errorMsg", "Could not save your article. Please try again.");
             request.setAttribute("formTitle", title);
             request.setAttribute("formContent", content);
             request.setAttribute("formCategoryId", categoryIdStr);
-            request.setAttribute("formTagIds", tagIdsStr);
             loadFormData(request);
-            request.getRequestDispatcher("/WEB-INF/views/member/write.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/member/edit.jsp").forward(request, response);
         }
+    }
+
+    private Article resolveArticle(HttpServletRequest request, HttpServletResponse response, User user)
+            throws IOException {
+        String idStr = request.getParameter("id");
+        if (idStr == null) {
+            response.sendRedirect(request.getContextPath() + "/member/articles");
+            return null;
+        }
+        int articleId;
+        try { articleId = Integer.parseInt(idStr); }
+        catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/member/articles");
+            return null;
+        }
+        Article article = articleDAO.getArticleById(articleId);
+        if (article == null || article.getAuthorId() != user.getUserId()) {
+            response.sendRedirect(request.getContextPath() + "/member/articles");
+            return null;
+        }
+        return article;
     }
 
     private void loadFormData(HttpServletRequest request) {
         List<Category> raw = categoryDAO.getAllCategories();
-
-        // Group children by parent id; collect roots separately
         List<Category> roots = new ArrayList<>();
         Map<Integer, List<Category>> childrenMap = new LinkedHashMap<>();
+        for (Category c : raw) childrenMap.put(c.getId(), new ArrayList<>());
         for (Category c : raw) {
-            childrenMap.put(c.getId(), new ArrayList<>());
-        }
-        for (Category c : raw) {
-            if (c.getParentId() == null) {
-                roots.add(c);
-            } else {
+            if (c.getParentId() == null) roots.add(c);
+            else {
                 List<Category> siblings = childrenMap.get(c.getParentId());
                 if (siblings != null) siblings.add(c);
             }
         }
-
-        // DFS traversal → correct display order + accurate depth per node
         List<Category> ordered = new ArrayList<>();
         Map<Integer, Integer> depthMap = new LinkedHashMap<>();
         visit(roots, 0, childrenMap, ordered, depthMap);
-
         request.setAttribute("categories", ordered);
         request.setAttribute("categoryDepths", depthMap);
         request.setAttribute("tags", tagDAO.getAllTags());
@@ -165,12 +187,9 @@ public class MemberArticleServlet extends HttpServlet {
         for (Category c : cats) {
             out.add(c);
             depthMap.put(c.getId(), depth);
-            List<Category> kids = childrenMap.getOrDefault(c.getId(), Collections.emptyList());
-            visit(kids, depth + 1, childrenMap, out, depthMap);
+            visit(childrenMap.getOrDefault(c.getId(), Collections.emptyList()), depth + 1, childrenMap, out, depthMap);
         }
     }
 
-    private boolean isBlank(String s) {
-        return s == null || s.isBlank();
-    }
+    private boolean isBlank(String s) { return s == null || s.isBlank(); }
 }
