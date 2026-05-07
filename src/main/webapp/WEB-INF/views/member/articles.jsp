@@ -6,8 +6,9 @@
     UserProfile profile = (UserProfile) request.getAttribute("userProfile");
     List<Article> articles = (List<Article>) request.getAttribute("articles");
 
-    String fullName = (profile != null && profile.getFullName() != null) ? profile.getFullName() : "Contributor";
-    String initials = (profile != null) ? profile.getInitials() : "?";
+    String fullName   = (profile != null && profile.getFullName()      != null) ? profile.getFullName()      : "Contributor";
+    String initials   = (profile != null) ? profile.getInitials() : "?";
+    String profilePic = (profile != null && profile.getProfilePicture() != null) ? profile.getProfilePicture() : "";
 
     String flashSuccess = (String) session.getAttribute("flashSuccess");
     if (flashSuccess != null) session.removeAttribute("flashSuccess");
@@ -53,7 +54,8 @@
     .topbar-user { display: flex; align-items: center; gap: 10px; }
     .topbar-name { font-size: 13px; font-weight: 600; color: #0e193e; }
     @media (max-width: 480px) { .topbar-name { display: none; } }
-    .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background-color: #00695c; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700; color: #fff; }
+    .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background-color: #00695c; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700; color: #fff; overflow: hidden; position: relative; }
+    .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
     .topbar-logout { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; color: #76767f; transition: background-color 0.15s, color 0.15s; }
     .topbar-logout:hover { background: #fce4ec; color: #c62828; }
     .topbar-logout .material-symbols-outlined { font-size: 18px; }
@@ -162,7 +164,10 @@
     <span class="topbar-brand">Thoughts of Nomads</span>
     <div class="topbar-user">
         <span class="topbar-name"><%= fullName %></span>
-        <div class="topbar-avatar"><%= initials %></div>
+        <div class="topbar-avatar">
+            <%= initials %>
+            <% if (!profilePic.isEmpty()) { %><img src="<%= cp %>/<%= profilePic %>" alt=""/><% } %>
+        </div>
         <a href="<%= cp %>/auth/logout" class="topbar-logout" title="Sign out">
             <span class="material-symbols-outlined">logout</span>
         </a>

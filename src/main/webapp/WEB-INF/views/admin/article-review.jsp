@@ -300,6 +300,41 @@
                         </div>
                     </div>
 
+                    <% if (article.isPublished()) { %>
+                    <!-- Newsletter -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <span class="material-symbols-outlined">send</span>
+                            Newsletter
+                        </div>
+                        <div class="panel-body">
+                            <%
+                                String flashNL = (String) session.getAttribute("flashSuccess");
+                                if (flashNL != null) { session.removeAttribute("flashSuccess"); }
+                            %>
+                            <% if (flashNL != null) { %>
+                            <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:10px 13px;font-size:13px;color:#2e7d32;margin-bottom:12px;">
+                                <%= flashNL %>
+                            </div>
+                            <% } %>
+                            <p style="font-size:13px;color:#45464e;line-height:1.5;margin-bottom:14px;">
+                                Send this article as an email newsletter to all active subscribers.
+                            </p>
+                            <form method="post" action="<%= cp %>/admin/subscribers"
+                                  onsubmit="return confirm('Send this article as a newsletter to all subscribers?')">
+                                <input type="hidden" name="action" value="send"/>
+                                <input type="hidden" name="articleId" value="<%= article.getArticleId() %>"/>
+                                <input type="hidden" name="redirect"
+                                       value="<%= cp %>/admin/articles/review?id=<%= article.getArticleId() %>"/>
+                                <button type="submit" style="display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px 16px;border-radius:8px;border:none;background:#0e193e;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">
+                                    <span class="material-symbols-outlined" style="font-size:17px;">send</span>
+                                    Send as Newsletter
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <% } %>
+
                     <!-- Decision -->
                     <div class="panel-card">
                         <div class="panel-header">

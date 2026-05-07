@@ -2,6 +2,7 @@ package com.thoughtsofnomads.dao;
 
 import com.thoughtsofnomads.config.DBConnection;
 import com.thoughtsofnomads.model.Article;
+import com.thoughtsofnomads.model.Tag;
 
 import java.io.FileOutputStream;
 import java.sql.Connection;
@@ -300,6 +301,215 @@ public class ArticleDAO {
         }
     }
 
+    // ── Public-facing queries ─────────────────────────────────────────────────
+
+    public int countPublished() {
+        String sql = "SELECT COUNT(*) FROM articles WHERE status = 'PUBLISHED'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public List<Article> getPublishedArticles(int page, int perPage) {
+        String sql = "SELECT a.article_id, a.author_id, a.title, a.status, a.cover_image, " +
+                     "       a.created_at, a.updated_at, a.published_at, a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name " +
+                     "FROM articles a " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.status = 'PUBLISHED' " +
+                     "ORDER BY a.published_at DESC " +
+                     "LIMIT ? OFFSET ?";
+        List<Article> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, perPage);
+            stmt.setInt(2, (page - 1) * perPage);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) { list.add(mapRow(rs)); }
+            }
+        } catch (SQLException e) { logError(e); }
+        return list;
+    }
+
+    public Article getPublishedById(int id) {
+        String sql = "SELECT a.article_id, a.author_id, a.category_id, a.title, a.content, " +
+                     "       a.status, a.cover_image, a.created_at, a.updated_at, a.published_at, " +
+                     "       a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, c.id AS category_id_join, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name, " +
+                     "       p.bio AS author_bio " +
+                     "FROM articles a " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.article_id = ? AND a.status = 'PUBLISHED'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Article a = mapRow(rs);
+                    a.setContent(rs.getString("content"));
+                    a.setCategoryId(rs.getInt("category_id"));
+                    try { a.setAuthorBio(rs.getString("author_bio")); } catch (SQLException ignored) {}
+                    a.setTags(getTagsByArticle(a.getArticleId()));
+                    return a;
+                }
+            }
+        } catch (SQLException e) { logError(e); }
+        return null;
+    }
+
+    public List<Article> getPublishedByCategory(int categoryId) {
+        String sql = "SELECT a.article_id, a.author_id, a.title, a.status, a.cover_image, " +
+                     "       a.created_at, a.updated_at, a.published_at, a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name " +
+                     "FROM articles a " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.status = 'PUBLISHED' AND a.category_id = ? " +
+                     "ORDER BY a.published_at DESC";
+        List<Article> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, categoryId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) { list.add(mapRow(rs)); }
+            }
+        } catch (SQLException e) { logError(e); }
+        return list;
+    }
+
+    public List<Article> searchPublished(String query) {
+        String sql = "SELECT a.article_id, a.author_id, a.title, a.status, a.cover_image, " +
+                     "       a.created_at, a.updated_at, a.published_at, a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name " +
+                     "FROM articles a " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.status = 'PUBLISHED' AND (a.title LIKE ? OR a.content LIKE ?) " +
+                     "ORDER BY a.published_at DESC " +
+                     "LIMIT 30";
+        List<Article> list = new ArrayList<>();
+        String like = "%" + query + "%";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, like);
+            stmt.setString(2, like);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) { list.add(mapRow(rs)); }
+            }
+        } catch (SQLException e) { logError(e); }
+        return list;
+    }
+
+    public List<Article> getRelatedPublished(int excludeId, int categoryId, int limit) {
+        String sql = "SELECT a.article_id, a.author_id, a.title, a.status, a.cover_image, " +
+                     "       a.created_at, a.updated_at, a.published_at, a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name " +
+                     "FROM articles a " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.status = 'PUBLISHED' AND a.article_id <> ? AND a.category_id = ? " +
+                     "ORDER BY a.published_at DESC LIMIT ?";
+        List<Article> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, excludeId); stmt.setInt(2, categoryId); stmt.setInt(3, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) { list.add(mapRow(rs)); }
+            }
+        } catch (SQLException e) { logError(e); }
+        return list;
+    }
+
+    public List<Tag> getTagsByArticle(int articleId) {
+        String sql = "SELECT t.id, t.name, t.slug FROM tags t " +
+                     "JOIN article_tags atg ON t.id = atg.tag_id WHERE atg.article_id = ?";
+        List<Tag> tags = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, articleId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Tag t = new Tag();
+                    t.setId(rs.getInt("id"));
+                    t.setName(rs.getString("name"));
+                    t.setSlug(rs.getString("slug"));
+                    tags.add(t);
+                }
+            }
+        } catch (SQLException e) { logError(e); }
+        return tags;
+    }
+
+    // ── Top Picks ─────────────────────────────────────────────────────────────
+
+    public List<Article> getTopPicks() {
+        String sql = "SELECT a.article_id, a.author_id, a.title, a.status, a.cover_image, " +
+                     "       a.created_at, a.updated_at, a.published_at, a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name " +
+                     "FROM home_top_picks tp " +
+                     "JOIN articles a ON tp.article_id = a.article_id " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.status = 'PUBLISHED' " +
+                     "ORDER BY tp.display_order ASC " +
+                     "LIMIT 3";
+        List<Article> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) { list.add(mapRow(rs)); }
+        } catch (SQLException e) { logError(e); }
+        return list;
+    }
+
+    public int countTopPicks() {
+        String sql = "SELECT COUNT(*) FROM home_top_picks";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public boolean addTopPick(int articleId) {
+        int current = countTopPicks();
+        if (current >= 3) return false;
+        String sql = "INSERT IGNORE INTO home_top_picks (article_id, display_order) VALUES (?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, articleId);
+            stmt.setInt(2, current + 1);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) { logError(e); return false; }
+    }
+
+    public boolean removeTopPick(int articleId) {
+        String sql = "DELETE FROM home_top_picks WHERE article_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, articleId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) { logError(e); return false; }
+    }
+
     // ── Private row mapper ────────────────────────────────────────────────────
 
     private Article mapRow(ResultSet rs) throws SQLException {
@@ -314,6 +524,7 @@ public class ArticleDAO {
         a.setReviewNote(rs.getString("review_note"));
         a.setReviewedAt(rs.getTimestamp("reviewed_at"));
         a.setCategoryName(rs.getString("category_name"));
+        try { a.setPublishedAt(rs.getTimestamp("published_at")); } catch (SQLException ignored) {}
         try { a.setAuthorName(rs.getString("author_name")); } catch (SQLException ignored) {}
         return a;
     }

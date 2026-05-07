@@ -91,29 +91,26 @@
 <nav class="site-header">
     <div class="header-container">
         <!-- Brand -->
-        <div class="header-brand">Thoughts of Nomads</div>
-        
+        <a class="header-brand" href="<%=request.getContextPath()%>/" style="text-decoration:none;">Thoughts of Nomads</a>
+
         <!-- Main Navigation (Desktop) -->
         <div class="header-menu">
-            <% 
-                String currentUri = request.getRequestURI();
+            <%
+                String currentUri  = request.getRequestURI();
                 String contextPath = request.getContextPath();
-                String forwardUri = (String) request.getAttribute("jakarta.servlet.forward.request_uri");
-                String checkPath = (forwardUri != null) ? forwardUri : currentUri;
-                
-                if (checkPath.startsWith(contextPath)) {
-                    checkPath = checkPath.substring(contextPath.length());
-                }
-                
-                boolean isHome = checkPath.equals("/") || checkPath.equals("") || checkPath.equals("/index.jsp");
-                boolean isCategory = checkPath.startsWith("/category");
-                boolean isLatest = checkPath.startsWith("/latest");
-                boolean isAbout = checkPath.startsWith("/about");
+                String forwardUri  = (String) request.getAttribute("jakarta.servlet.forward.request_uri");
+                String checkPath   = (forwardUri != null) ? forwardUri : currentUri;
+                if (checkPath.startsWith(contextPath)) checkPath = checkPath.substring(contextPath.length());
+
+                boolean isHome       = checkPath.equals("/") || checkPath.equals("") || checkPath.equals("/home");
+                boolean isCategories = checkPath.startsWith("/categories") || checkPath.startsWith("/category");
+                boolean isLatest     = checkPath.startsWith("/latest");
+                boolean isAbout      = checkPath.startsWith("/about");
             %>
-            <a class="nav-link <%= isHome ? "active" : "" %>" href="<%=contextPath%>/">Home</a>
-            <a class="nav-link <%= isCategory ? "active" : "" %>" href="<%=contextPath%>/category">Categories</a>
-            <a class="nav-link <%= isLatest ? "active" : "" %>" href="<%=contextPath%>/latest">Latest</a>
-            <a class="nav-link <%= isAbout ? "active" : "" %>" href="<%=contextPath%>/about">About Us</a>
+            <a class="nav-link <%= isHome       ? "active" : "" %>" href="<%=contextPath%>/">Home</a>
+            <a class="nav-link <%= isCategories ? "active" : "" %>" href="<%=contextPath%>/categories">Categories</a>
+            <a class="nav-link <%= isLatest     ? "active" : "" %>" href="<%=contextPath%>/latest">Latest</a>
+            <a class="nav-link <%= isAbout      ? "active" : "" %>" href="<%=contextPath%>/about">About Us</a>
         </div>
 
         <!-- Auth Navigation (Desktop) -->

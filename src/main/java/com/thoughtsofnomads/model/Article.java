@@ -1,6 +1,8 @@
 package com.thoughtsofnomads.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Article {
     private int       articleId;
@@ -19,6 +21,8 @@ public class Article {
     // Joined fields
     private String categoryName;
     private String authorName;
+    private String authorBio;
+    private List<Tag> tags = new ArrayList<>();
 
     public Article() {}
 
@@ -66,6 +70,12 @@ public class Article {
     public String    getAuthorName()   { return authorName; }
     public void      setAuthorName(String authorName) { this.authorName = authorName; }
 
+    public String    getAuthorBio()    { return authorBio; }
+    public void      setAuthorBio(String authorBio) { this.authorBio = authorBio; }
+
+    public List<Tag> getTags()         { return tags; }
+    public void      setTags(List<Tag> tags) { this.tags = tags; }
+
     // ── Convenience ───────────────────────────────────────────────────────────
 
     public boolean isDraft()     { return "DRAFT".equals(status); }
@@ -76,5 +86,12 @@ public class Article {
     public String getStatusLabel() {
         if (status == null) return "Unknown";
         return status.charAt(0) + status.substring(1).toLowerCase();
+    }
+
+    public int getReadTimeMinutes() {
+        if (content == null || content.isBlank()) return 1;
+        String text = content.replaceAll("<[^>]+>", " ").trim();
+        int words = text.isEmpty() ? 0 : text.split("\\s+").length;
+        return Math.max(1, (int) Math.ceil(words / 200.0));
     }
 }

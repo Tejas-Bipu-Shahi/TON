@@ -136,12 +136,59 @@
     <div class="newsletter-container">
         <h2 class="newsletter-title">Join the Nomad Community</h2>
         <p class="newsletter-desc">Subscribe to our newsletter for the latest stories and travel insights.</p>
-        <form class="newsletter-form" onsubmit="return false;">
-            <input class="newsletter-input" placeholder="Your email address" required type="email" />
-            <button class="newsletter-btn" type="submit">Subscribe</button>
+        <form class="newsletter-form" id="newsletterForm">
+            <input class="newsletter-input" id="newsletterEmail" placeholder="Your email address" required type="email" />
+            <button class="newsletter-btn" id="newsletterBtn" type="submit">Subscribe</button>
         </form>
+        <p id="newsletterMsg" style="display:none;margin-top:16px;font-size:14px;font-weight:600;"></p>
     </div>
 </section>
+<script>
+(function() {
+    var form  = document.getElementById('newsletterForm');
+    var input = document.getElementById('newsletterEmail');
+    var btn   = document.getElementById('newsletterBtn');
+    var msg   = document.getElementById('newsletterMsg');
+    var url   = '<%= request.getContextPath() %>/subscribe';
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var email = input.value.trim();
+        if (!email) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Subscribing...';
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'email=' + encodeURIComponent(email)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                form.style.display = 'none';
+                msg.style.color = '#2e7d32';
+                msg.textContent = "You're subscribed! We'll send you the latest stories.";
+                msg.style.display = 'block';
+            } else {
+                msg.style.color = data.error && data.error.indexOf('already') !== -1 ? '#e65100' : '#c62828';
+                msg.textContent = data.error || 'Something went wrong. Please try again.';
+                msg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Subscribe';
+            }
+        })
+        .catch(function() {
+            msg.style.color = '#c62828';
+            msg.textContent = 'Connection error. Please try again.';
+            msg.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Subscribe';
+        });
+    });
+})();
+</script>
 
 <!-- Footer Base HTML -->
 <footer class="site-footer">
@@ -167,7 +214,7 @@
         <div class="footer-col">
             <nav class="footer-nav">
                 <a class="footer-link" href="<%=request.getContextPath()%>/">Home</a>
-                <a class="footer-link" href="<%=request.getContextPath()%>/category">Categories</a>
+                <a class="footer-link" href="<%=request.getContextPath()%>/latest">Categories</a>
                 <a class="footer-link" href="<%=request.getContextPath()%>/latest">Latest</a>
             </nav>
         </div>

@@ -6,8 +6,9 @@ public class Category {
     private String name;
     private String slug;
     private String description;
-    private Integer parentId;   // null = top-level
-    private String parentName;  // populated by JOIN for display
+    private Integer parentId;    // null = top-level
+    private String  parentName; // populated by JOIN for display
+    private int     articleCount;
 
     public Category() {}
 
@@ -35,6 +36,9 @@ public class Category {
 
     public String getParentName() { return parentName; }
     public void setParentName(String parentName) { this.parentName = parentName; }
+
+    public int  getArticleCount()          { return articleCount; }
+    public void setArticleCount(int count) { this.articleCount = count; }
 
     public boolean isSubcategory() { return parentId != null && parentId > 0; }
 }

@@ -11,9 +11,10 @@
     int statPending   = (Integer) request.getAttribute("statPending");
     int statDraft     = (Integer) request.getAttribute("statDraft");
 
-    String fullName  = (profile != null && profile.getFullName() != null) ? profile.getFullName() : "Contributor";
-    String initials  = (profile != null) ? profile.getInitials() : "?";
-    String firstName = fullName.trim().split("\\s+")[0];
+    String fullName   = (profile != null && profile.getFullName()      != null) ? profile.getFullName()      : "Contributor";
+    String initials   = (profile != null) ? profile.getInitials() : "?";
+    String profilePic = (profile != null && profile.getProfilePicture() != null) ? profile.getProfilePicture() : "";
+    String firstName  = fullName.trim().split("\\s+")[0];
     String bio       = (profile != null && profile.getBio() != null) ? profile.getBio() : null;
 
     SimpleDateFormat dateFmt = new SimpleDateFormat("MMM d, yyyy");
@@ -72,7 +73,9 @@
         background-color: #00695c; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700; color: #fff;
+        overflow: hidden; position: relative;
     }
+    .topbar-avatar img, .hero-avatar img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
     .topbar-logout {
         display: flex; align-items: center; justify-content: center;
         width: 32px; height: 32px; border-radius: 6px; color: #76767f;
@@ -101,6 +104,7 @@
         font-family: 'Epilogue', sans-serif; font-size: 20px; font-weight: 700;
         color: #fff; letter-spacing: 0.02em;
         border: 2px solid rgba(255,255,255,0.2);
+        overflow: hidden; position: relative;
     }
     .hero-text { flex: 1; min-width: 0; }
     .hero-greeting {
@@ -231,7 +235,9 @@
         background-color: #00695c; display: flex; align-items: center; justify-content: center;
         margin: 0 auto 14px;
         font-family: 'Epilogue', sans-serif; font-size: 20px; font-weight: 700; color: #fff;
+        overflow: hidden; position: relative;
     }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
     .profile-name   { font-family: 'Epilogue', sans-serif; font-size: 16px; font-weight: 700; color: #0e193e; margin-bottom: 3px; }
     .profile-email  { font-size: 12.5px; color: #76767f; margin-bottom: 12px; }
     .profile-bio    {
@@ -281,7 +287,10 @@
         <div class="topbar-brand">Thoughts of Nomads</div>
         <div class="topbar-user">
             <span class="topbar-name"><%= fullName %></span>
-            <div class="topbar-avatar"><%= initials %></div>
+            <div class="topbar-avatar">
+                <%= initials %>
+                <% if (!profilePic.isEmpty()) { %><img src="<%= cp %>/<%= profilePic %>" alt=""/><% } %>
+            </div>
             <a href="<%= cp %>/auth/logout" class="topbar-logout" title="Sign out">
                 <span class="material-symbols-outlined">logout</span>
             </a>
@@ -291,7 +300,10 @@
     <!-- ── Welcome Hero ─────────────────────────────────────────── -->
     <section class="dash-hero">
         <div class="dash-hero-inner">
-            <div class="hero-avatar"><%= initials %></div>
+            <div class="hero-avatar">
+                <%= initials %>
+                <% if (!profilePic.isEmpty()) { %><img src="<%= cp %>/<%= profilePic %>" alt=""/><% } %>
+            </div>
             <div class="hero-text">
                 <h1 class="hero-greeting">Welcome back, <%= firstName %>!</h1>
                 <div class="hero-meta">
@@ -427,7 +439,10 @@
 
                 <!-- Profile card -->
                 <div class="profile-card">
-                    <div class="profile-avatar"><%= initials %></div>
+                    <div class="profile-avatar">
+                    <%= initials %>
+                    <% if (!profilePic.isEmpty()) { %><img src="<%= cp %>/<%= profilePic %>" alt=""/><% } %>
+                </div>
                     <div class="profile-name"><%= fullName %></div>
                     <div class="profile-email"><%= user.getEmail() %></div>
                     <% if (bio != null && !bio.isBlank()) { %>

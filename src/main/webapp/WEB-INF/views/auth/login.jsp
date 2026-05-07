@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+    String loginFlash = (String) session.getAttribute("flashSuccess");
+    if (loginFlash != null) session.removeAttribute("flashSuccess");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,6 +100,13 @@
         }
 
         /* Security Alert (Pink box from image) */
+        .auth-success-box {
+            background-color: #e8f5e9; border: 1px solid #c8e6c9;
+            padding: 16px 20px; border-radius: var(--radius);
+            display: flex; gap: 12px; align-items: center; margin-bottom: 24px;
+            font-size: 14px; color: #2e7d32; font-weight: 500;
+        }
+        .auth-success-box .material-symbols-outlined { font-size: 18px; flex-shrink: 0; }
         .auth-error-box {
             background-color: var(--error-container);
             border: 1px solid rgba(186, 26, 26, 0.15);
@@ -237,6 +248,13 @@
         <div class="auth-form-panel">
             <div class="auth-form-wrapper">
                 
+                <% if (loginFlash != null) { %>
+                <div class="auth-success-box">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <%= loginFlash %>
+                </div>
+                <% } %>
+
                 <!-- Security Feedback (Stylized as pink box from image) -->
                 <% if (request.getAttribute("error") != null) { %>
                     <div class="auth-error-box">

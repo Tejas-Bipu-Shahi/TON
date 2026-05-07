@@ -180,6 +180,37 @@ public class UserDAO {
         }
     }
 
+    // ── Member: Self-service profile ─────────────────────────────────────────────
+
+    public boolean updateProfile(int userId, String fullName, String contactNumber, String bio) {
+        String sql = "UPDATE user_profiles SET full_name = ?, contact_number = ?, bio = ? WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, fullName);
+            stmt.setString(2, blank(contactNumber) ? null : contactNumber);
+            stmt.setString(3, blank(bio) ? null : bio);
+            stmt.setInt(4, userId);
+            stmt.executeUpdate(); // return value is 0 when values are unchanged — still a success
+            return true;
+        } catch (SQLException e) {
+            logError(e);
+            return false;
+        }
+    }
+
+    public boolean updateProfilePicture(int userId, String pictureUrl) {
+        String sql = "UPDATE user_profiles SET profile_picture = ? WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, blank(pictureUrl) ? null : pictureUrl);
+            stmt.setInt(2, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logError(e);
+            return false;
+        }
+    }
+
     // ── Admin: Read ───────────────────────────────────────────────────────────────
 
     public List<User> getAllUsers() {

@@ -9,7 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CategoryDAO {
 
@@ -60,6 +64,70 @@ public class CategoryDAO {
             logError(e);
         }
         return null;
+    }
+
+    public List<Category> getAllWithArticleCounts() {
+        List<Category> all = getAllCategories();
+        Map<Integer, Integer>       directCounts = getDirectArticleCounts();
+        Map<Integer, List<Integer>> childrenMap  = buildChildrenMap(all);
+        for (Category cat : all) {
+            cat.setArticleCount(sumRecursive(cat.getId(), childrenMap, directCounts));
+        }
+        return all;
+    }
+
+    public List<Category> getSubcategories(int parentId) {
+        List<Category> all = getAllCategories();
+        Map<Integer, Integer>       directCounts = getDirectArticleCounts();
+        Map<Integer, List<Integer>> childrenMap  = buildChildrenMap(all);
+
+        List<Category> subs = new ArrayList<>();
+        for (Category cat : all) {
+            if (cat.getParentId() != null && cat.getParentId() == parentId) {
+                cat.setArticleCount(sumRecursive(cat.getId(), childrenMap, directCounts));
+                subs.add(cat);
+            }
+        }
+        subs.sort(Comparator.comparing(Category::getName));
+        return subs;
+    }
+
+    // ── Recursive counting helpers ─────────────────────────────────────────────
+
+    private Map<Integer, Integer> getDirectArticleCounts() {
+        String sql = "SELECT category_id, COUNT(*) AS cnt FROM articles " +
+                     "WHERE status = 'PUBLISHED' GROUP BY category_id";
+        Map<Integer, Integer> counts = new HashMap<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                counts.put(rs.getInt("category_id"), rs.getInt("cnt"));
+            }
+        } catch (SQLException e) {
+            logError(e);
+        }
+        return counts;
+    }
+
+    private Map<Integer, List<Integer>> buildChildrenMap(List<Category> all) {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (Category cat : all) {
+            if (cat.getParentId() != null) {
+                map.computeIfAbsent(cat.getParentId(), k -> new ArrayList<>()).add(cat.getId());
+            }
+        }
+        return map;
+    }
+
+    private int sumRecursive(int catId,
+                             Map<Integer, List<Integer>> childrenMap,
+                             Map<Integer, Integer> directCounts) {
+        int count = directCounts.getOrDefault(catId, 0);
+        for (int childId : childrenMap.getOrDefault(catId, Collections.emptyList())) {
+            count += sumRecursive(childId, childrenMap, directCounts);
+        }
+        return count;
     }
 
     // ── Write ─────────────────────────────────────────────────────────────────

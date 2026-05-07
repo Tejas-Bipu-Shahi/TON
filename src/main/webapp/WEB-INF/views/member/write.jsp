@@ -9,8 +9,9 @@
     Map<Integer,Integer> depthMap = (Map<Integer,Integer>) request.getAttribute("categoryDepths");
     List<Tag>  tags      = (List<Tag>) request.getAttribute("tags");
 
-    String fullName = (profile != null && profile.getFullName() != null) ? profile.getFullName() : "Contributor";
-    String initials = (profile != null) ? profile.getInitials() : "?";
+    String fullName   = (profile != null && profile.getFullName()      != null) ? profile.getFullName()      : "Contributor";
+    String initials   = (profile != null) ? profile.getInitials() : "?";
+    String profilePic = (profile != null && profile.getProfilePicture() != null) ? profile.getProfilePicture() : "";
 
     // Restore form state on validation failure
     String formTitle      = (String) request.getAttribute("formTitle");
@@ -87,7 +88,9 @@
         background-color: #00695c; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Epilogue', sans-serif; font-size: 11px; font-weight: 700; color: #fff;
+        overflow: hidden; position: relative;
     }
+    .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
     .topbar-logout {
         display: flex; align-items: center; justify-content: center;
         width: 32px; height: 32px; border-radius: 6px; color: #76767f;
@@ -384,7 +387,10 @@
     <span class="topbar-brand">Thoughts of Nomads</span>
     <div class="topbar-user">
         <span class="topbar-name"><%=fullName%></span>
-        <div class="topbar-avatar"><%=initials%></div>
+        <div class="topbar-avatar">
+            <%=initials%>
+            <% if (!profilePic.isEmpty()) { %><img src="<%= cp %>/<%= profilePic %>" alt=""/><% } %>
+        </div>
         <a href="<%=cp%>/auth/logout" class="topbar-logout" title="Sign out">
             <span class="material-symbols-outlined">logout</span>
         </a>

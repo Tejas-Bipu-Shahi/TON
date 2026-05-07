@@ -155,6 +155,12 @@
             Articles
         </a>
 
+        <a href="<%= cp %>/admin/top-picks"
+           class="sidebar-link <%= activePath.startsWith("/admin/top-picks") ? "active" : "" %>">
+            <span class="material-symbols-outlined">star</span>
+            Top Picks
+        </a>
+
         <span class="sidebar-section-label">Taxonomy</span>
 
         <a href="<%= cp %>/admin/categories"
@@ -175,6 +181,12 @@
            class="sidebar-link <%= activePath.startsWith("/admin/users") ? "active" : "" %>">
             <span class="material-symbols-outlined">group</span>
             Users
+        </a>
+
+        <a href="<%= cp %>/admin/subscribers"
+           class="sidebar-link <%= activePath.startsWith("/admin/subscribers") ? "active" : "" %>">
+            <span class="material-symbols-outlined">mail</span>
+            Subscribers
         </a>
     </nav>
 

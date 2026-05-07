@@ -1,7 +1,10 @@
 package com.thoughtsofnomads.controller;
 
+import com.thoughtsofnomads.config.EmailService;
 import com.thoughtsofnomads.dao.ArticleDAO;
+import com.thoughtsofnomads.dao.UserDAO;
 import com.thoughtsofnomads.model.Article;
+import com.thoughtsofnomads.model.User;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +19,7 @@ import java.util.List;
 public class AdminArticlesServlet extends HttpServlet {
 
     private final ArticleDAO articleDAO = new ArticleDAO();
+    private final UserDAO    userDAO    = new UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -96,6 +100,20 @@ public class AdminArticlesServlet extends HttpServlet {
         }
 
         articleDAO.updateStatus(articleId, newStatus, reviewNote);
+
+        // Send email notification to the author
+        Article article = articleDAO.getArticleById(articleId);
+        if (article != null) {
+            User author = userDAO.getUserById(article.getAuthorId());
+            if (author != null) {
+                String displayName = article.getAuthorName() != null ? article.getAuthorName() : author.getEmail();
+                if ("PUBLISHED".equals(newStatus)) {
+                    EmailService.sendArticlePublished(author.getEmail(), displayName, article.getTitle());
+                } else {
+                    EmailService.sendArticleRejected(author.getEmail(), displayName, article.getTitle(), reviewNote);
+                }
+            }
+        }
 
         String flash = "publish".equals(action)
                 ? "Article published successfully."
