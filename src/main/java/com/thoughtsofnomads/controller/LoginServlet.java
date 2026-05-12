@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 @WebServlet("/auth/login")
 public class LoginServlet extends HttpServlet {
 
+    // change these constants if the policy changes — easier than hunting through the logic
     private static final int MAX_ATTEMPTS    = 5;
     private static final int LOCK_MINUTES    = 10;
 
@@ -47,13 +48,14 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // ── Locked account: check if window has expired ───────────────────────
+        // if the lock window has already passed, silently unlock and let them try again
         if (user.getAccountStatus() == AccountStatus.LOCKED) {
             Timestamp lockedUntil = user.getDisabledAt();
             if (lockedUntil != null && lockedUntil.toInstant().isBefore(Instant.now())) {
                 userDAO.resetFailedAttempts(user.getUserId());
                 user.setAccountStatus(AccountStatus.ACTIVE);
             } else {
+                // +1 so we never show "0 minutes remaining"
                 long minsLeft = lockedUntil != null
                     ? ChronoUnit.MINUTES.between(Instant.now(), lockedUntil.toInstant()) + 1
                     : LOCK_MINUTES;
@@ -77,8 +79,8 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // ── Password check ────────────────────────────────────────────────────
         if (BCrypt.checkpw(password, user.getPasswordHash())) {
+            // successful login — reset the counter so they get a fresh 5 attempts next time
             userDAO.resetFailedAttempts(user.getUserId());
             HttpSession session = request.getSession();
             session.setAttribute("user", user);

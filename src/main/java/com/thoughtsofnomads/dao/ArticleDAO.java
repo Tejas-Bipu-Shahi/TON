@@ -14,12 +14,13 @@ import java.util.List;
 
 public class ArticleDAO {
 
+    // errors are logged here AND printed to stderr so Eclipse console shows them too
     private static final String LOG_PATH = "/home/shiro/eclipse-workspace/TON/sql_error.log";
 
     // ── Member dashboard: per-author stats ───────────────────────────────────
 
+    // returns [total, published, pending, draft, rejected] in one query
     public int[] getStatsByAuthor(int authorId) {
-        // returns [total, published, pending, draft, rejected]
         String sql = "SELECT " +
                      "  COUNT(*) AS total, " +
                      "  SUM(CASE WHEN status='PUBLISHED' THEN 1 ELSE 0 END) AS published, " +
@@ -82,6 +83,7 @@ public class ArticleDAO {
 
     // ── Write ─────────────────────────────────────────────────────────────────
 
+    // inserts the article and its tags in a single transaction — both succeed or both fail
     public int createArticle(Article article, List<Integer> tagIds) {
         String sqlA = "INSERT INTO articles (author_id, category_id, title, content, status, cover_image) " +
                       "VALUES (?, ?, ?, ?, ?, ?)";
@@ -234,6 +236,7 @@ public class ArticleDAO {
 
     // ── Admin: publish or reject ──────────────────────────────────────────────
 
+    // sets published_at only when publishing — null when rejecting, preserves old value otherwise
     public boolean updateStatus(int articleId, String status, String reviewNote) {
         String sql = "UPDATE articles SET status = ?, review_note = ?, reviewed_at = NOW(), " +
                      "published_at = CASE WHEN ? = 'PUBLISHED' THEN NOW() ELSE published_at END " +
@@ -253,6 +256,7 @@ public class ArticleDAO {
 
     // ── Contributor: edit & resubmit ──────────────────────────────────────────
 
+    // editing an article clears the review_note so old feedback doesn't show after resubmit
     public boolean updateArticle(Article article, List<Integer> tagIds) {
         String sqlA = "UPDATE articles SET category_id=?, title=?, content=?, status=?, " +
                       "cover_image = COALESCE(?, cover_image), updated_at=NOW(), " +
@@ -567,6 +571,7 @@ public class ArticleDAO {
 
     // ── Private row mapper ────────────────────────────────────────────────────
 
+    // shared mapper used by all list queries — individual methods add extra fields on top
     private Article mapRow(ResultSet rs) throws SQLException {
         Article a = new Article();
         a.setArticleId(rs.getInt("article_id"));
@@ -579,6 +584,7 @@ public class ArticleDAO {
         a.setReviewNote(rs.getString("review_note"));
         a.setReviewedAt(rs.getTimestamp("reviewed_at"));
         a.setCategoryName(rs.getString("category_name"));
+        // some queries don't SELECT these columns — catch and ignore instead of crashing
         try { a.setPublishedAt(rs.getTimestamp("published_at")); } catch (SQLException ignored) {}
         try { a.setAuthorName(rs.getString("author_name")); } catch (SQLException ignored) {}
         return a;

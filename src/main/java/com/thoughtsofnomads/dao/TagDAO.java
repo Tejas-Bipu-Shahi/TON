@@ -17,9 +17,7 @@ public class TagDAO {
 
     // ── Read ──────────────────────────────────────────────────────────────────
 
-    /**
-     * Returns all tags with their article count, ordered by name.
-     */
+    // article_count is 0 for tags not used in any article yet
     public List<Tag> getAllTags() {
         String sql = "SELECT t.id, t.name, t.slug, COUNT(at.article_id) AS article_count " +
                      "FROM tags t " +

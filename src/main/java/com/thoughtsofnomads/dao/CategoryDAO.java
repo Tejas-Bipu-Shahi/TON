@@ -31,10 +31,7 @@ public class CategoryDAO {
         return 0;
     }
 
-    /**
-     * Returns all categories ordered so each parent appears immediately before
-     * its children: ORDER BY COALESCE(parent_id, id), parent_id IS NOT NULL, name
-     */
+    // ORDER BY COALESCE(parent_id, id) groups each parent with its children
     public List<Category> getAllCategories() {
         String sql = "SELECT c.id, c.name, c.slug, c.description, c.parent_id, " +
                      "       p.name AS parent_name " +
@@ -130,6 +127,7 @@ public class CategoryDAO {
         return map;
     }
 
+    // parent category count includes all articles in its subcategories too
     private int sumRecursive(int catId,
                              Map<Integer, List<Integer>> childrenMap,
                              Map<Integer, Integer> directCounts) {

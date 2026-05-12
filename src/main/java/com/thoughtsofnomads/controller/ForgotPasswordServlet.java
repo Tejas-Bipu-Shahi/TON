@@ -65,11 +65,11 @@ public class ForgotPasswordServlet extends HttpServlet {
             return;
         }
 
-        // Always show success message (don't reveal whether account exists)
+        // same response whether or not account exists — don't leak which emails are registered
         User user = userDAO.getUserByEmail(email);
         if (user != null) {
             String otp     = generateOtp();
-            long   expiry  = System.currentTimeMillis() + 10 * 60 * 1000; // 10 min
+            long   expiry  = System.currentTimeMillis() + 10 * 60 * 1000; // 10 min in ms
 
             session.setAttribute("resetEmail",  email);
             session.setAttribute("resetOtp",    otp);
@@ -117,7 +117,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         }
 
         session.setAttribute("resetVerified", true);
-        session.removeAttribute("resetOtp"); // consume OTP
+        session.removeAttribute("resetOtp"); // one-time use — remove after correct entry
         response.sendRedirect(request.getContextPath() + "/auth/forgot-password?step=reset");
     }
 
@@ -171,6 +171,7 @@ public class ForgotPasswordServlet extends HttpServlet {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    // determines which step to show on GET requests based on session state
     private String resolveStep(HttpSession session) {
         if (session == null) return "email";
         if (Boolean.TRUE.equals(session.getAttribute("resetVerified"))) return "reset";

@@ -62,6 +62,7 @@ public class AdminSubscribersServlet extends HttpServlet {
                     } else {
                         List<Subscriber> subs  = subscriberDAO.getAllSubscribers();
                         List<String>     emails = subs.stream().map(Subscriber::getEmail).collect(Collectors.toList());
+                        // build a full absolute URL for the email link — relative paths don't work in emails
                         String articleUrl = request.getScheme() + "://" + request.getServerName()
                                 + ":" + request.getServerPort() + cp + "/article?id=" + articleId;
                         int sent = EmailService.sendNewsletterToAll(

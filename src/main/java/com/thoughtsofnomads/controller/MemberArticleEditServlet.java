@@ -119,7 +119,7 @@ public class MemberArticleEditServlet extends HttpServlet {
         updated.setTitle(title.trim());
         updated.setContent(content);
         updated.setStatus("submit".equals(action) ? "PENDING" : "DRAFT");
-        updated.setCoverImage(newCoverPath); // null = keep existing (handled in DAO)
+        updated.setCoverImage(newCoverPath); // null means no new file uploaded — DAO uses COALESCE to keep old one
 
         boolean ok = articleDAO.updateArticle(updated, tagIds);
         if (ok) {
@@ -154,6 +154,7 @@ public class MemberArticleEditServlet extends HttpServlet {
             return null;
         }
         Article article = articleDAO.getArticleById(articleId);
+        // make sure contributors can only edit their own articles
         if (article == null || article.getAuthorId() != user.getUserId()) {
             response.sendRedirect(request.getContextPath() + "/member/articles");
             return null;

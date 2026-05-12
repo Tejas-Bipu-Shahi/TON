@@ -57,6 +57,7 @@ public class AdminTopPicksServlet extends HttpServlet {
             return;
         }
 
+        // max 3 top picks — the homepage layout only has 3 slots
         if ("add".equals(action)) {
             if (articleDAO.countTopPicks() >= 3) {
                 request.getSession().setAttribute("flashError",

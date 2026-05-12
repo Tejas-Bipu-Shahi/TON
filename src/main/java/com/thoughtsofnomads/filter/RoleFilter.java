@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+// runs after AuthFilter — makes sure users can only access their own role's pages
 @WebFilter(urlPatterns = {"/admin/*", "/member/*"})
 public class RoleFilter implements Filter {
 
@@ -38,11 +39,13 @@ public class RoleFilter implements Filter {
         boolean isAdminPath = uri.startsWith(contextPath + "/admin/");
         boolean isMemberPath = uri.startsWith(contextPath + "/member/");
 
+        // contributor trying to access admin area → bounce to their dashboard
         if (isAdminPath && user.getRole() != Role.ADMIN) {
             httpResponse.sendRedirect(contextPath + "/member/dashboard");
             return;
         }
 
+        // admin trying to access member area → bounce to admin dashboard
         if (isMemberPath && user.getRole() != Role.CONTRIBUTOR) {
             httpResponse.sendRedirect(contextPath + "/admin/dashboard");
             return;

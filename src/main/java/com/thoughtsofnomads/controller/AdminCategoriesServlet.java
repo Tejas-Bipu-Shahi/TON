@@ -119,7 +119,7 @@ public class AdminCategoriesServlet extends HttpServlet {
             Category cat = new Category(name, slug, description.isEmpty() ? null : description, parentId);
             cat.setId(id);
 
-            // Prevent a category from becoming its own parent
+            // would create an infinite loop in the breadcrumb traversal
             if (parentId != null && parentId == id) {
                 setFlash(request, null, "A category cannot be its own parent.");
                 response.sendRedirect(contextPath + "/admin/categories");

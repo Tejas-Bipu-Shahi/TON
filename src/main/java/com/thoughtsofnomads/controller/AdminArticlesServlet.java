@@ -89,8 +89,8 @@ public class AdminArticlesServlet extends HttpServlet {
         String newStatus = "publish".equals(action) ? "PUBLISHED" : "REJECTED";
         String reviewNote = (note != null && !note.isBlank()) ? note.trim() : null;
 
+        // contributors see the rejection note — force admin to write one before rejecting
         if ("REJECTED".equals(newStatus) && reviewNote == null) {
-            // Reject requires a note
             Article article = articleDAO.getArticleById(articleId);
             request.setAttribute("article", article);
             request.setAttribute("errorMsg", "Please provide a note explaining why the article is rejected.");
@@ -101,11 +101,12 @@ public class AdminArticlesServlet extends HttpServlet {
 
         articleDAO.updateStatus(articleId, newStatus, reviewNote);
 
-        // Send email notification to the author
+        // notify the author by email after every publish or reject
         Article article = articleDAO.getArticleById(articleId);
         if (article != null) {
             User author = userDAO.getUserById(article.getAuthorId());
             if (author != null) {
+                // use full name if available, fall back to email
                 String displayName = article.getAuthorName() != null ? article.getAuthorName() : author.getEmail();
                 if ("PUBLISHED".equals(newStatus)) {
                     EmailService.sendArticlePublished(author.getEmail(), displayName, article.getTitle());

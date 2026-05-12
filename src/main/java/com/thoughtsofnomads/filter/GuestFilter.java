@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+// redirects already-logged-in users away from login/register pages
 @WebFilter(urlPatterns = {"/auth/login", "/auth/register"})
 public class GuestFilter implements Filter {
 
@@ -25,6 +26,7 @@ public class GuestFilter implements Filter {
         boolean loggedIn = (session != null && session.getAttribute("user") != null);
 
         if (loggedIn) {
+            // /dashboard is handled by RoleFilter which routes to admin or member
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/dashboard");
         } else {
             chain.doFilter(request, response);

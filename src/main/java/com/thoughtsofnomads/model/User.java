@@ -5,12 +5,12 @@ import java.sql.Timestamp;
 public class User {
     private int userId;
     private String email;
-    private String passwordHash;
+    private String passwordHash;    // BCrypt hash — never store plaintext
     private Role role;
     private int failedAttempts;
     private AccountStatus accountStatus;
     private Timestamp createdAt;
-    private Timestamp disabledAt;
+    private Timestamp disabledAt;   // doubles as lockout expiry when status = LOCKED
     private Timestamp deletedAt;
 
     public User() {

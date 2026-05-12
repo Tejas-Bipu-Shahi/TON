@@ -114,6 +114,7 @@ public class AdminUsersServlet extends HttpServlet {
             int userId = Integer.parseInt(idParam);
             User self = sessionUser(req);
 
+            // prevent admins from accidentally locking or demoting themselves
             if (self != null && self.getUserId() == userId) {
                 if (role != Role.ADMIN) {
                     setFlash(req, null, "You cannot change your own role.");
@@ -148,6 +149,7 @@ public class AdminUsersServlet extends HttpServlet {
         resp.sendRedirect(cp + "/admin/users");
     }
 
+    // quick status toggle from the users table — used by admin to manually unlock accounts
     private void handleStatusChange(HttpServletRequest req, HttpServletResponse resp, String cp) throws IOException {
         String idParam     = req.getParameter("userId");
         String statusParam = req.getParameter("newStatus");

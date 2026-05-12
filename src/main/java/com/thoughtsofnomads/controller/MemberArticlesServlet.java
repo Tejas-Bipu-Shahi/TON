@@ -25,6 +25,7 @@ public class MemberArticlesServlet extends HttpServlet {
             throws ServletException, IOException {
 
         User user = (User) request.getSession(false).getAttribute("user");
+        // profile needed for the sidebar avatar
         User fullUser = userDAO.getUserById(user.getUserId());
         if (fullUser != null) {
             request.setAttribute("userProfile", fullUser.getProfile());

@@ -29,7 +29,7 @@ public class HomeServlet extends HttpServlet {
         Set<Integer> topPickIds = new HashSet<>();
         for (Article a : topPicks) topPickIds.add(a.getArticleId());
 
-        // Fetch extra to filter out top picks from latest
+        // fetch more than needed so we can exclude top picks and still have 6 "latest"
         List<Article> candidates = articleDAO.getPublishedArticles(1, 12);
         List<Article> latestArticles = candidates.stream()
                 .filter(a -> !topPickIds.contains(a.getArticleId()))

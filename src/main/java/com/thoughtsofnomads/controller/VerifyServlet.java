@@ -41,16 +41,13 @@ public class VerifyServlet extends HttpServlet {
 
         User user = userDAO.getUserByEmail(email);
         if (user != null && otp != null && otp.equals(sessionOtp)) {
-            // Activate user
             userDAO.activateUser(email);
-            
-            // Clean session
+
+            // clean up so the verify page can't be revisited
             session.removeAttribute("verificationEmail");
             session.removeAttribute("verificationOTP");
-            
-            // Set login session
+
             session.setAttribute("user", user);
-            
             response.sendRedirect(request.getContextPath() + "/index.jsp");
         } else {
             request.setAttribute("error", "Invalid verification code.");

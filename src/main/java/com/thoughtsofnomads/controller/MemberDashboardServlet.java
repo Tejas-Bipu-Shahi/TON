@@ -26,13 +26,13 @@ public class MemberDashboardServlet extends HttpServlet {
 
         User user = (User) request.getSession(false).getAttribute("user");
 
-        // Load full profile (includes UserProfile joined data)
+        // session only has basic user data — need a DB call to get the full profile with picture
         User fullUser = userDAO.getUserById(user.getUserId());
         if (fullUser != null) {
             request.setAttribute("userProfile", fullUser.getProfile());
         }
 
-        // Article stats: [total, published, pending, draft, rejected]
+        // single aggregated query instead of 5 separate COUNT queries
         int[] stats = articleDAO.getStatsByAuthor(user.getUserId());
         request.setAttribute("statTotal",     stats[0]);
         request.setAttribute("statPublished", stats[1]);

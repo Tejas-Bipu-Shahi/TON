@@ -20,13 +20,14 @@ import java.util.UUID;
 @MultipartConfig(maxFileSize = 5 * 1024 * 1024, maxRequestSize = 6 * 1024 * 1024)
 public class ImageUploadServlet extends HttpServlet {
 
+    // only allow image formats — no SVG or PDFs
     private static final Set<String> ALLOWED_EXTS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp");
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Must be logged in (RoleFilter covers /member/*)
+        // belt-and-suspenders check — RoleFilter already blocks non-logged-in users on /member/*
         if (request.getSession(false) == null
                 || request.getSession(false).getAttribute("user") == null) {
             sendError(response, 401, "Unauthorized");
@@ -59,12 +60,14 @@ public class ImageUploadServlet extends HttpServlet {
                 + java.io.File.separator + "content";
         Files.createDirectories(Paths.get(uploadsDir));
 
+        // UUID avoids filename collisions without needing a database sequence
         String filename = UUID.randomUUID().toString() + ext;
 
         try (InputStream in = part.getInputStream()) {
             Files.copy(in, Paths.get(uploadsDir, filename), StandardCopyOption.REPLACE_EXISTING);
         }
 
+        // return just the URL — the editor (TipTap) embeds it as an <img> tag
         String url = request.getContextPath() + "/uploads/content/" + filename;
 
         response.setContentType("application/json;charset=UTF-8");

@@ -19,6 +19,7 @@ import java.util.List;
 
 public class UserDAO {
 
+    // creates both the users row and the user_profiles row in one transaction
     public boolean registerUser(User user, String fullName, String contactNumber) {
         String insertUserQuery = "INSERT INTO users (email, password_hash, role, account_status) VALUES (?, ?, ?, ?)";
         String insertProfileQuery = "INSERT INTO user_profiles (user_id, full_name, contact_number) VALUES (?, ?, ?)";
@@ -74,6 +75,7 @@ public class UserDAO {
         }
     }
 
+    // re-registration for emails stuck in PENDING state — replaces old hash and profile info
     public boolean overrideUnverifiedUser(User user, String fullName, String contactNumber) {
         String updateUserQuery = "UPDATE users SET password_hash = ? WHERE email = ?";
         String updateProfileQuery = "UPDATE user_profiles SET full_name = ?, contact_number = ? WHERE user_id = (SELECT user_id FROM users WHERE email = ?)";
@@ -216,6 +218,7 @@ public class UserDAO {
 
     // ── Login lockout ─────────────────────────────────────────────────────────────
 
+    // increments then re-queries so we return the actual DB value, not an assumed +1
     public int incrementFailedAttempts(int userId) {
         String sql = "UPDATE users SET failed_attempts = failed_attempts + 1 WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -237,6 +240,7 @@ public class UserDAO {
 
     public boolean lockAccountTemporarily(int userId, int minutes) {
         String sql = "UPDATE users SET account_status = 'LOCKED', disabled_at = ? WHERE user_id = ?";
+        // compute expiry in Java, not MySQL — avoids timezone mismatch (Nepal UTC+5:45 vs Java UTC)
         Timestamp lockedUntil = Timestamp.from(Instant.now().plus(minutes, ChronoUnit.MINUTES));
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -424,6 +428,7 @@ public class UserDAO {
         }
     }
 
+    // used by admin to manually unlock accounts — when setting ACTIVE, resets counter and clears lock expiry
     public boolean updateAccountStatus(int userId, AccountStatus newStatus) {
         String sql = "UPDATE users SET account_status = ?, " +
                      "failed_attempts = CASE WHEN ? = 'ACTIVE' THEN 0 ELSE failed_attempts END, " +
@@ -458,6 +463,7 @@ public class UserDAO {
 
     // ── Helpers ───────────────────────────────────────────────────────────────────
 
+    // used by both getAllUsers() and getUserById() so the mapping stays consistent
     private User mapUserWithProfile(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));

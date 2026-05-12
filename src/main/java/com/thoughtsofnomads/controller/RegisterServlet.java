@@ -62,16 +62,14 @@ public class RegisterServlet extends HttpServlet {
         }
 
         try {
-            // Hash password
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-            // Generate OTP
+            // 6-digit OTP, zero-padded so "000123" stays as a string not an int
             String otp = String.format("%06d", new Random().nextInt(999999));
-            // Create User object
             User newUser = new User(email, hashedPassword, Role.CONTRIBUTOR, AccountStatus.PENDING);
 
             boolean isRegistrationSuccess = false;
 
-            // Check if user already exists
+            // allow re-registration if the previous attempt was never verified
             User existingUser = userDAO.getUserByEmail(email);
             if (existingUser != null) {
                 if (existingUser.getAccountStatus() == AccountStatus.PENDING) {
@@ -86,10 +84,9 @@ public class RegisterServlet extends HttpServlet {
             }
 
             if (isRegistrationSuccess) {
-                // Send OTP email
                 EmailService.sendOTP(email, otp);
 
-                // Store email and OTP in session for verification
+                // store OTP in session — it gets consumed and removed after successful verify
                 HttpSession session = request.getSession();
                 session.setAttribute("verificationEmail", email);
                 session.setAttribute("verificationOTP", otp);

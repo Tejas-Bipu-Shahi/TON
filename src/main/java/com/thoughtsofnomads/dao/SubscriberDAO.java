@@ -9,6 +9,7 @@ import java.util.List;
 
 public class SubscriberDAO {
 
+    // INSERT IGNORE skips silently if the email already exists — no duplicate error
     public boolean addSubscriber(String email) {
         String sql = "INSERT IGNORE INTO subscribers (email) VALUES (?)";
         try (Connection conn = DBConnection.getConnection();

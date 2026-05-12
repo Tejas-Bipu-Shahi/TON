@@ -110,6 +110,7 @@ public class MemberArticleServlet extends HttpServlet {
         article.setCategoryId(Integer.parseInt(categoryIdStr.trim()));
         article.setTitle(title.trim());
         article.setContent(content);
+        // "Save Draft" keeps it as DRAFT, "Submit" puts it in the review queue
         article.setStatus("submit".equals(action) ? "PENDING" : "DRAFT");
         article.setCoverImage(coverImagePath);
 
@@ -134,7 +135,7 @@ public class MemberArticleServlet extends HttpServlet {
     private void loadFormData(HttpServletRequest request) {
         List<Category> raw = categoryDAO.getAllCategories();
 
-        // Group children by parent id; collect roots separately
+        // DFS traversal so the dropdown shows "Parent → Child" indented correctly
         List<Category> roots = new ArrayList<>();
         Map<Integer, List<Category>> childrenMap = new LinkedHashMap<>();
         for (Category c : raw) {

@@ -10,9 +10,10 @@ import java.util.Properties;
 public class EmailService {
 
     private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final String SMTP_PORT = "587";
+    private static final String SMTP_PORT = "587";              // port 587 with STARTTLS
     private static final String MAIL_USER = "ejlaas@ejlaas.com";
-    private static final String MAIL_PASS = "wpgj mdyp riec ghpj";
+    private static final String MAIL_PASS = "wpgj mdyp riec ghpj"; // Gmail app password — not the account password
+    // MAIL_ALIAS is the displayed "From" address; MAIL_USER is the actual sending account
     private static final String MAIL_ALIAS = "nomads@ejlaas.com";
 
     public static boolean sendArticlePublished(String recipientEmail, String authorName, String articleTitle) {
@@ -39,6 +40,7 @@ public class EmailService {
 
     // ── Newsletter ────────────────────────────────────────────────────────────
 
+    // returns how many emails were actually sent — useful for the flash message count
     public static int sendNewsletterToAll(List<String> emails, String articleTitle,
                                            String articleUrl, String authorName, String category) {
         int sent = 0;

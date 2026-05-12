@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+// handles all public-facing pages — static ones just get forwarded to their JSP directly
 @WebServlet({"/about", "/contact", "/latest", "/categories", "/category", "/article", "/search", "/terms", "/privacy"})
 public class PageController extends HttpServlet {
 
@@ -37,6 +38,7 @@ public class PageController extends HttpServlet {
             case "/category"   -> handleCategory(request, response);
             case "/article"    -> handleArticle(request, response);
             case "/search"     -> handleSearch(request, response);
+            // /about, /contact (GET), /terms, /privacy all just forward to their JSP
             default            -> request.getRequestDispatcher(
                                       "/WEB-INF/views/public/" + path.substring(1) + ".jsp")
                                       .forward(request, response);
@@ -141,7 +143,7 @@ public class PageController extends HttpServlet {
         List<Category> subcategories  = categoryDAO.getSubcategories(catId);
         List<Category> allCategories  = categoryDAO.getAllCategories();
 
-        // for parent breadcrumb link when this is a subcategory
+        // needed for the breadcrumb trail on subcategory pages
         Category parentCategory = (category.getParentId() != null)
                 ? categoryDAO.getCategoryById(category.getParentId()) : null;
 

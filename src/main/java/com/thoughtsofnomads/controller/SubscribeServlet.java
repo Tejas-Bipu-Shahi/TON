@@ -19,6 +19,7 @@ public class SubscribeServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // this endpoint is called via AJAX from the newsletter form on the homepage
         response.setContentType("application/json;charset=UTF-8");
 
         String email = request.getParameter("email");

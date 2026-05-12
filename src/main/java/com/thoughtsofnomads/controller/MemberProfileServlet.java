@@ -60,13 +60,12 @@ public class MemberProfileServlet extends HttpServlet {
             return;
         }
 
-        // Update text fields and picture independently — picture must not be gated on whether
-        // text fields changed (MySQL returns 0 affected rows when values are identical).
+        // profile text and picture are updated independently — executeUpdate returns 0 when
+        // values haven't changed, but that's still a success for us
         boolean ok = userDAO.updateProfile(sessionUser.getUserId(), fullName, contactNumber, bio);
 
         if (profilePicture != null && !profilePicture.isBlank()) {
-            // ImageUploadServlet returns a URL with the context path prefix; strip it so the
-            // stored value is "uploads/content/uuid.jpg" — consistent with article covers.
+            // strip the context path prefix so we store "uploads/content/uuid.jpg" not "/TON/uploads/..."
             String ctx = request.getContextPath();
             if (profilePicture.startsWith(ctx + "/")) {
                 profilePicture = profilePicture.substring(ctx.length() + 1);

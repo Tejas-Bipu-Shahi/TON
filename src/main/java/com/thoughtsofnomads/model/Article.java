@@ -10,7 +10,7 @@ public class Article {
     private int       categoryId;
     private String    title;
     private String    content;
-    private String    status;       // DRAFT | PENDING | PUBLISHED | REJECTED
+    private String    status;       // DRAFT → PENDING (submitted) → PUBLISHED or REJECTED
     private String    coverImage;
     private String    reviewNote;
     private Timestamp createdAt;
@@ -18,7 +18,7 @@ public class Article {
     private Timestamp publishedAt;
     private Timestamp reviewedAt;
 
-    // Joined fields
+    // these come from JOINs — not actual columns in the articles table
     private String categoryName;
     private String authorName;
     private String authorBio;
@@ -92,10 +92,11 @@ public class Article {
         return status.charAt(0) + status.substring(1).toLowerCase();
     }
 
+    // strips HTML tags before counting words — articles are stored as HTML from the editor
     public int getReadTimeMinutes() {
         if (content == null || content.isBlank()) return 1;
         String text = content.replaceAll("<[^>]+>", " ").trim();
         int words = text.isEmpty() ? 0 : text.split("\\s+").length;
-        return Math.max(1, (int) Math.ceil(words / 200.0));
+        return Math.max(1, (int) Math.ceil(words / 200.0)); // average reading speed ~200 wpm
     }
 }

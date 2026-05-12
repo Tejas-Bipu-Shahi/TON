@@ -28,6 +28,7 @@ public class UserProfile {
     public String getProfilePicture() { return profilePicture; }
     public void   setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
 
+    // used as avatar fallback when no profile picture is uploaded
     public String getInitials() {
         if (fullName == null || fullName.isBlank()) return "?";
         String[] parts = fullName.trim().split("\\s+");

@@ -19,6 +19,12 @@
     SimpleDateFormat fmt = new SimpleDateFormat("MMM d, yyyy");
     String cp = request.getContextPath();
     boolean isFull = topPickCount >= 3;
+
+    String adminDisplayName = (user != null && user.getEmail() != null)
+        ? user.getEmail().substring(0, user.getEmail().contains("@") ? user.getEmail().indexOf("@") : user.getEmail().length())
+        : "Admin";
+    adminDisplayName = adminDisplayName.isEmpty() ? "Admin"
+        : Character.toUpperCase(adminDisplayName.charAt(0)) + adminDisplayName.substring(1);
 %>
 <!DOCTYPE html>
 <html lang="en">

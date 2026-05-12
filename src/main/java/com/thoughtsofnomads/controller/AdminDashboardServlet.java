@@ -25,7 +25,7 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Stat card numbers
+        // stat card numbers shown at the top of the dashboard
         request.setAttribute("totalArticles",     articleDAO.countAll());
         request.setAttribute("pendingCount",      articleDAO.countByStatus("PENDING"));
         request.setAttribute("newThisMonth",      articleDAO.countThisMonth());
@@ -34,7 +34,7 @@ public class AdminDashboardServlet extends HttpServlet {
         request.setAttribute("totalCategories",   categoryDAO.countAll());
         request.setAttribute("totalSubscribers",  subscriberDAO.countSubscribers());
 
-        // Tables
+        // show 8 rows in each preview table — enough without making the page too long
         request.setAttribute("pendingArticles", articleDAO.getRecentPending(8));
         request.setAttribute("recentUsers",     userDAO.getRecentUsers(8));
 
