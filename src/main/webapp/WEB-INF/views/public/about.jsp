@@ -219,6 +219,7 @@
         }
         .about-institutional-card p { font-size: 14px; color: var(--on-surface-variant); }
     </style>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
 </head>
 
 <body class="about-layout">

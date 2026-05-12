@@ -318,6 +318,7 @@
                 font-size: 14px;
             }
         </style>
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
     </head>
 
     <body class="contact-layout">

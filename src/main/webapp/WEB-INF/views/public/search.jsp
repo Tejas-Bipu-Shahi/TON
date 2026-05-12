@@ -83,6 +83,7 @@
         .btn-solid { background: var(--primary); color: var(--on-primary); border: none; padding: 12px 24px; border-radius: var(--radius); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.1em; display: inline-flex; align-items: center; gap: 8px; }
         .btn-solid:hover { background: var(--primary-container); }
     </style>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
 </head>
 <body class="search-layout">
     <jsp:include page="/WEB-INF/views/includes/header.jsp"/>

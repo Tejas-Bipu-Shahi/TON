@@ -116,6 +116,7 @@
         .card-title { font-family: 'Epilogue', sans-serif; font-size: 18px; font-weight: 600; color: var(--on-surface); margin-bottom: 12px; line-height: 1.3; }
         .card-meta { font-size: 11px; color: var(--on-surface-variant); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--surface-variant); }
     </style>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
 </head>
 <body class="article-layout">
 

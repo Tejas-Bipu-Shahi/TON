@@ -123,6 +123,7 @@
         .newsletter-input::placeholder { color: rgba(255,255,255,0.6); }
         .newsletter-btn { width: 100%; background: var(--accent-yellow); color: #462b00; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 11px; border-radius: var(--radius); border: none; cursor: pointer; }
     </style>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
 </head>
 <body class="latest-layout">
     <jsp:include page="/WEB-INF/views/includes/header.jsp"/>

@@ -88,22 +88,29 @@ button { cursor: pointer; font-family: inherit; }
 .nav-link {
     color: var(--on-surface-variant); font-weight: 500; text-transform: uppercase;
     letter-spacing: 0.1em; font-size: 12px; transition: color 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
 }
 .nav-link:hover { color: var(--primary); transform: scale(0.95); }
+.nav-link:active { transform: scale(0.90); }
 .nav-link.active { color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 4px; font-weight: 600; }
 
 /* ============================================================
    NEWSLETTER
    ============================================================ */
-.newsletter-section { background-color: var(--surface-container-lowest); padding: 64px 0; }
+.newsletter-section { background-color: #f3f4f5; padding: 64px 0; }
 .newsletter-container {
     max-width: var(--container-max); margin: 0 auto; text-align: center;
     padding: 0 var(--margin-mobile);
 }
 .newsletter-title {
     font-family: 'Epilogue', sans-serif; font-size: 32px; font-weight: 600; margin-bottom: 16px;
+    color: var(--on-surface);
 }
-.newsletter-desc { font-size: 18px; color: var(--on-surface-variant); margin-bottom: 32px; }
+.newsletter-desc {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 18px; color: var(--on-surface-variant); margin-bottom: 32px;
+    max-width: 576px; margin-left: auto; margin-right: auto;
+}
 .newsletter-form {
     display: flex; flex-direction: column; gap: 16px; max-width: 512px; margin: 0 auto;
 }
@@ -111,13 +118,19 @@ button { cursor: pointer; font-family: inherit; }
 
 .newsletter-input {
     flex-grow: 1; padding: 12px 16px; border-radius: var(--radius);
-    border: 1px solid var(--outline-variant); outline: none; background-color: var(--surface);
+    border: 1px solid var(--outline-variant); outline: none; background-color: #ffffff;
+    font-family: 'Work Sans', sans-serif; font-size: 16px; color: var(--on-surface);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.newsletter-input:focus { border-color: var(--primary); }
+.newsletter-input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
 .newsletter-btn {
     background-color: var(--primary); color: var(--on-primary); font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 32px; border: none; border-radius: var(--radius);
+    font-family: 'Work Sans', sans-serif; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 32px;
+    border: none; border-radius: var(--radius);
+    transition: opacity 0.2s ease; cursor: pointer;
 }
+.newsletter-btn:hover { opacity: 0.9; }
 
 /* ============================================================
    FOOTER

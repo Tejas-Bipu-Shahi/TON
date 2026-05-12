@@ -84,6 +84,7 @@
 
         .doc-section a { color: var(--primary); text-underline-offset: 3px; }
     </style>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
 </head>
 
 <body class="page-layout">

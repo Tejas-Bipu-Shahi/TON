@@ -104,6 +104,7 @@
         .empty-state .material-symbols-outlined { font-size: 56px; color: #d0d2d8; display: block; margin-bottom: 16px; font-variation-settings: 'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48; }
         .empty-title { font-size: 18px; font-weight: 600; color: var(--on-surface); margin-bottom: 8px; }
     </style>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css" />
 </head>
 <body class="page-layout">
     <jsp:include page="/WEB-INF/views/includes/header.jsp"/>
