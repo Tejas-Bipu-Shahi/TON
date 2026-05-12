@@ -148,7 +148,7 @@
             <span class="topbar-title">Subscribers</span>
             <div class="topbar-profile">
                 <div>
-                    <div class="topbar-profile-name">System Admin</div>
+                    <div class="topbar-profile-name"><%= adminDisplayName %></div>
                     <div class="topbar-profile-role">Administrator</div>
                 </div>
                 <div class="topbar-avatar"><%= userInitial %></div>

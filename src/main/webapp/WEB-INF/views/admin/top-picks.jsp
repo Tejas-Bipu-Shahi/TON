@@ -177,7 +177,7 @@
             <span class="topbar-title">Top Picks</span>
             <div class="topbar-profile">
                 <div class="topbar-profile-info">
-                    <div class="topbar-profile-name">System Admin</div>
+                    <div class="topbar-profile-name"><%= adminDisplayName %></div>
                     <div class="topbar-profile-role">Administrator</div>
                 </div>
                 <div class="topbar-avatar"><%= userInitial %></div>

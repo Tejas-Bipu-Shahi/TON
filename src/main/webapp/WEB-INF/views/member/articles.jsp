@@ -147,6 +147,25 @@
     .btn-resubmit:hover { background: #bf360c; }
     .btn-resubmit .material-symbols-outlined { font-size: 14px; }
 
+    /* Search */
+    .search-bar {
+        position: relative; margin-bottom: 20px;
+    }
+    .search-icon {
+        position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+        color: #9b9ea4; font-size: 18px; pointer-events: none;
+    }
+    .search-input {
+        width: 100%; padding: 10px 16px 10px 38px;
+        border: 1px solid #e1e3e4; border-radius: 8px;
+        background: #fff; font-family: 'Work Sans', sans-serif;
+        font-size: 14px; color: #191c1d; outline: none;
+        transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: #0e193e; }
+    .search-input::placeholder { color: #b0b3ba; }
+    .no-results { text-align: center; padding: 40px 16px; color: #76767f; font-size: 14px; display: none; }
+
     /* Empty state */
     .empty-state { text-align: center; padding: 64px 32px; color: #76767f; }
     .empty-icon .material-symbols-outlined { font-size: 52px; color: #d0d2d8; font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 48; }
@@ -191,6 +210,13 @@
     </div>
     <% } %>
 
+    <% if (articles != null && !articles.isEmpty()) { %>
+    <div class="search-bar">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" id="articleSearch" class="search-input" placeholder="Search your articles by title or category…" />
+    </div>
+    <% } %>
+
     <% if (articles == null || articles.isEmpty()) { %>
     <div class="empty-state">
         <div class="empty-icon"><span class="material-symbols-outlined">article</span></div>
@@ -198,11 +224,12 @@
         <div class="empty-sub">Start writing and submit your first article for review.</div>
     </div>
     <% } else { %>
-    <div class="article-list">
+    <div class="article-list" id="articleList">
     <% for (Article a : articles) {
            String badgeClass = "badge-" + a.getStatus().toLowerCase();
+           String searchData = (a.getTitle() + " " + (a.getCategoryName() != null ? a.getCategoryName() : "")).toLowerCase();
     %>
-        <div class="article-item">
+        <div class="article-item" data-search="<%= searchData %>">
             <div class="article-item-top">
                 <span class="article-item-title"><%= a.getTitle() %></span>
                 <span class="badge <%= badgeClass %>">
@@ -259,8 +286,26 @@
         </div>
     <% } %>
     </div>
+    <div class="no-results" id="noResults">No articles match your search.</div>
     <% } %>
 
 </div>
+<script>
+(function () {
+    var input = document.getElementById('articleSearch');
+    if (!input) return;
+    input.addEventListener('input', function () {
+        var q = this.value.trim().toLowerCase();
+        var items = document.querySelectorAll('#articleList .article-item');
+        var visible = 0;
+        items.forEach(function (el) {
+            var match = !q || el.dataset.search.indexOf(q) !== -1;
+            el.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        document.getElementById('noResults').style.display = (visible === 0 && q) ? 'block' : 'none';
+    });
+})();
+</script>
 </body>
 </html>

@@ -54,7 +54,8 @@
         .article-title-plain { font-family: 'Epilogue', sans-serif; font-size: 32px; font-weight: 700; color: var(--on-surface); line-height: 1.25; margin-bottom: 24px; }
 
         .article-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--surface-variant); }
-        .article-meta-avatar-init { width: 48px; height: 48px; border-radius: 50%; background: #00695c; display: flex; align-items: center; justify-content: center; font-family: 'Epilogue', sans-serif; font-size: 18px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .article-meta-avatar-init { width: 48px; height: 48px; border-radius: 50%; background: #00695c; display: flex; align-items: center; justify-content: center; font-family: 'Epilogue', sans-serif; font-size: 18px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+        .article-meta-avatar-init img { width: 100%; height: 100%; object-fit: cover; }
         .article-meta-info { display: flex; flex-direction: column; }
         .article-author-name { font-size: 14px; font-weight: 600; color: var(--on-surface); margin-bottom: 4px; }
         .article-meta-details { display: flex; align-items: center; font-size: 12px; color: var(--on-surface-variant); gap: 8px; }
@@ -72,7 +73,8 @@
 
         .article-author-box { margin-top: 48px; padding: 24px; background-color: var(--surface-container-lowest); border: 1px solid var(--surface-variant); border-radius: var(--radius); display: flex; flex-direction: column; gap: 16px; }
         @media (min-width: 640px) { .article-author-box { flex-direction: row; align-items: flex-start; } }
-        .author-box-avatar { width: 64px; height: 64px; border-radius: 8px; background: #0e193e; display: flex; align-items: center; justify-content: center; font-family: 'Epilogue', sans-serif; font-size: 22px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .author-box-avatar { width: 64px; height: 64px; border-radius: 8px; background: #0e193e; display: flex; align-items: center; justify-content: center; font-family: 'Epilogue', sans-serif; font-size: 22px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+        .author-box-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .author-box-info { display: flex; flex-direction: column; }
         .author-box-name { font-family: 'Epilogue', sans-serif; font-size: 18px; font-weight: 600; color: var(--on-surface); margin-bottom: 8px; }
         .author-box-bio { font-size: 14px; color: var(--on-surface-variant); line-height: 1.6; }
@@ -145,8 +147,13 @@
                     <%
                         String authorName = article.getAuthorName() != null ? article.getAuthorName() : "Author";
                         String initial = String.valueOf(authorName.charAt(0)).toUpperCase();
+                        String profilePic = article.getAuthorProfilePicture();
                     %>
-                    <div class="article-meta-avatar-init"><%= initial %></div>
+                    <div class="article-meta-avatar-init">
+                        <% if (profilePic != null && !profilePic.isBlank()) { %>
+                            <img src="<%= cp %>/<%= profilePic %>" alt="<%= authorName %>"/>
+                        <% } else { %><%= initial %><% } %>
+                    </div>
                     <div class="article-meta-info">
                         <span class="article-author-name"><%= authorName %></span>
                         <div class="article-meta-details">
@@ -165,7 +172,11 @@
 
                 <% if (article.getAuthorName() != null) { %>
                 <div class="article-author-box">
-                    <div class="author-box-avatar"><%= initial %></div>
+                    <div class="author-box-avatar">
+                        <% if (profilePic != null && !profilePic.isBlank()) { %>
+                            <img src="<%= cp %>/<%= profilePic %>" alt="<%= authorName %>"/>
+                        <% } else { %><%= initial %><% } %>
+                    </div>
                     <div class="author-box-info">
                         <h3 class="author-box-name"><%= authorName %></h3>
                         <% if (article.getAuthorBio() != null && !article.getAuthorBio().isBlank()) { %>

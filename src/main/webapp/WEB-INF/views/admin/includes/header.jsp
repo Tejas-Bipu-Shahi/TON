@@ -7,6 +7,9 @@
                        : "A";
     String _pageTitle = (String) request.getAttribute("adminPageTitle");
     if (_pageTitle == null) _pageTitle = "Admin";
+    String _adminEmail = (_headerUser != null && _headerUser.getEmail() != null) ? _headerUser.getEmail() : "admin";
+    String _adminName  = _adminEmail.contains("@") ? _adminEmail.substring(0, _adminEmail.indexOf('@')) : _adminEmail;
+    _adminName = _adminName.isEmpty() ? "Admin" : Character.toUpperCase(_adminName.charAt(0)) + _adminName.substring(1);
 %>
 <style>
 /* ── Admin Header ─────────────────────────────────────────── */
@@ -86,7 +89,7 @@
     </div>
     <div class="admin-header-right">
         <div class="admin-header-user">
-            <div class="admin-header-name">System Admin</div>
+            <div class="admin-header-name"><%= _adminName %></div>
             <div class="admin-header-role">Administrator</div>
         </div>
         <div class="admin-header-avatar"><%= _initial %></div>

@@ -214,7 +214,7 @@
             </div>
             <div class="topbar-profile">
                 <div>
-                    <div class="topbar-profile-name">System Admin</div>
+                    <div class="topbar-profile-name"><%= adminDisplayName %></div>
                     <div class="topbar-profile-role" style="text-align:right;">Administrator</div>
                 </div>
                 <div class="topbar-avatar"><%= userInitial %></div>

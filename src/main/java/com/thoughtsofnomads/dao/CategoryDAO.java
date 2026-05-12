@@ -21,6 +21,16 @@ public class CategoryDAO {
 
     // ── Read ──────────────────────────────────────────────────────────────────
 
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM categories";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
     /**
      * Returns all categories ordered so each parent appears immediately before
      * its children: ORDER BY COALESCE(parent_id, id), parent_id IS NOT NULL, name

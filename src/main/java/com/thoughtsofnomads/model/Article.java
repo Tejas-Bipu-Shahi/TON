@@ -22,6 +22,7 @@ public class Article {
     private String categoryName;
     private String authorName;
     private String authorBio;
+    private String authorProfilePicture;
     private List<Tag> tags = new ArrayList<>();
 
     public Article() {}
@@ -72,6 +73,9 @@ public class Article {
 
     public String    getAuthorBio()    { return authorBio; }
     public void      setAuthorBio(String authorBio) { this.authorBio = authorBio; }
+
+    public String    getAuthorProfilePicture() { return authorProfilePicture; }
+    public void      setAuthorProfilePicture(String authorProfilePicture) { this.authorProfilePicture = authorProfilePicture; }
 
     public List<Tag> getTags()         { return tags; }
     public void      setTags(List<Tag> tags) { this.tags = tags; }

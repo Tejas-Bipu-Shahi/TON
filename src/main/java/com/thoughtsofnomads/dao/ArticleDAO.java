@@ -303,6 +303,60 @@ public class ArticleDAO {
 
     // ── Public-facing queries ─────────────────────────────────────────────────
 
+    public int countAll() {
+        String sql = "SELECT COUNT(*) FROM articles";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public int countByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM articles WHERE status = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public int countThisMonth() {
+        String sql = "SELECT COUNT(*) FROM articles WHERE created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public List<Article> getRecentPending(int limit) {
+        String sql = "SELECT a.article_id, a.author_id, a.title, a.status, a.cover_image, " +
+                     "       a.created_at, a.updated_at, a.review_note, a.reviewed_at, " +
+                     "       c.name AS category_name, " +
+                     "       COALESCE(p.full_name, u.email) AS author_name " +
+                     "FROM articles a " +
+                     "LEFT JOIN categories c ON a.category_id = c.id " +
+                     "LEFT JOIN users u ON a.author_id = u.user_id " +
+                     "LEFT JOIN user_profiles p ON a.author_id = p.user_id " +
+                     "WHERE a.status = 'PENDING' " +
+                     "ORDER BY a.updated_at DESC LIMIT ?";
+        List<Article> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) { logError(e); }
+        return list;
+    }
+
     public int countPublished() {
         String sql = "SELECT COUNT(*) FROM articles WHERE status = 'PUBLISHED'";
         try (Connection conn = DBConnection.getConnection();
@@ -343,7 +397,7 @@ public class ArticleDAO {
                      "       a.review_note, a.reviewed_at, " +
                      "       c.name AS category_name, c.id AS category_id_join, " +
                      "       COALESCE(p.full_name, u.email) AS author_name, " +
-                     "       p.bio AS author_bio " +
+                     "       p.bio AS author_bio, p.profile_picture AS author_profile_picture " +
                      "FROM articles a " +
                      "LEFT JOIN categories c ON a.category_id = c.id " +
                      "LEFT JOIN users u ON a.author_id = u.user_id " +
@@ -358,6 +412,7 @@ public class ArticleDAO {
                     a.setContent(rs.getString("content"));
                     a.setCategoryId(rs.getInt("category_id"));
                     try { a.setAuthorBio(rs.getString("author_bio")); } catch (SQLException ignored) {}
+                    try { a.setAuthorProfilePicture(rs.getString("author_profile_picture")); } catch (SQLException ignored) {}
                     a.setTags(getTagsByArticle(a.getArticleId()));
                     return a;
                 }

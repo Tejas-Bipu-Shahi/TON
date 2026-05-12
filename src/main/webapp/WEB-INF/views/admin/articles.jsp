@@ -82,6 +82,18 @@
     }
     .tab-link.active .tab-count { background: #a23d30; color: #fff; }
 
+    /* Search */
+    .search-bar { position: relative; margin-bottom: 16px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9b9ea4; font-size: 18px; pointer-events: none; }
+    .search-input {
+        width: 100%; padding: 10px 16px 10px 38px;
+        border: 1px solid #e1e3e4; border-radius: 8px;
+        background: #fff; font-family: 'Work Sans', sans-serif;
+        font-size: 14px; color: #191c1d; outline: none; transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: #0e193e; }
+    .search-input::placeholder { color: #b0b3ba; }
+
     /* Table */
     .table-card { background: #fff; border: 1px solid #e1e3e4; border-radius: 10px; overflow: hidden; }
     .table-wrap { overflow-x: auto; }
@@ -155,7 +167,7 @@
             <span class="topbar-title">Articles</span>
             <div class="topbar-profile">
                 <div class="topbar-profile-info">
-                    <div class="topbar-profile-name">System Admin</div>
+                    <div class="topbar-profile-name"><%= adminDisplayName %></div>
                     <div class="topbar-profile-role">Administrator</div>
                 </div>
                 <div class="topbar-avatar"><%= userInitial %></div>
@@ -208,6 +220,11 @@
                 </a>
             </div>
 
+            <div class="search-bar">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" id="articleSearch" class="search-input" placeholder="Search by title or author…" />
+            </div>
+
             <div class="table-card">
                 <div class="table-wrap">
                     <table>
@@ -231,8 +248,9 @@
                             </td></tr>
                         <% } else { for (Article a : articles) {
                                String badgeClass = "badge-" + a.getStatus().toLowerCase();
+                               String searchData = (a.getTitle() + " " + (a.getAuthorName() != null ? a.getAuthorName() : "") + " " + (a.getCategoryName() != null ? a.getCategoryName() : "")).toLowerCase();
                            %>
-                            <tr>
+                            <tr data-search="<%= searchData %>">
                                 <td class="article-title-cell">
                                     <span class="article-title"><%= a.getTitle() %></span>
                                     <% if (a.getCategoryName() != null) { %>
@@ -266,5 +284,18 @@
         </main>
     </div>
 </div>
+<script>
+(function () {
+    var input = document.getElementById('articleSearch');
+    if (!input) return;
+    input.addEventListener('input', function () {
+        var q = this.value.trim().toLowerCase();
+        var rows = document.querySelectorAll('tbody tr[data-search]');
+        rows.forEach(function (row) {
+            row.style.display = (!q || row.dataset.search.indexOf(q) !== -1) ? '' : 'none';
+        });
+    });
+})();
+</script>
 </body>
 </html>

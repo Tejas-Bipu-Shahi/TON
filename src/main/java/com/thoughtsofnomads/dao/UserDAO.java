@@ -10,6 +10,9 @@ import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -209,6 +212,89 @@ public class UserDAO {
             logError(e);
             return false;
         }
+    }
+
+    // ── Login lockout ─────────────────────────────────────────────────────────────
+
+    public int incrementFailedAttempts(int userId) {
+        String sql = "UPDATE users SET failed_attempts = failed_attempts + 1 WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) { logError(e); }
+
+        String sel = "SELECT failed_attempts FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sel)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public boolean lockAccountTemporarily(int userId, int minutes) {
+        String sql = "UPDATE users SET account_status = 'LOCKED', disabled_at = ? WHERE user_id = ?";
+        Timestamp lockedUntil = Timestamp.from(Instant.now().plus(minutes, ChronoUnit.MINUTES));
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, lockedUntil);
+            stmt.setInt(2, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) { logError(e); return false; }
+    }
+
+    public boolean resetFailedAttempts(int userId) {
+        String sql = "UPDATE users SET failed_attempts = 0, account_status = 'ACTIVE', " +
+                     "disabled_at = NULL WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) { logError(e); return false; }
+    }
+
+    // ── Admin: Dashboard stats ────────────────────────────────────────────────────
+
+    public int countContributors() {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'CONTRIBUTOR' AND account_status != 'DELETED'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public int countNewContributorsThisWeek() {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = 'CONTRIBUTOR' " +
+                     "AND account_status != 'DELETED' AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { logError(e); }
+        return 0;
+    }
+
+    public List<User> getRecentUsers(int limit) {
+        String sql = "SELECT u.user_id, u.email, u.role, u.account_status, u.failed_attempts, " +
+                     "       u.created_at, u.disabled_at, " +
+                     "       p.profile_id, p.full_name, p.contact_number, p.bio, p.profile_picture " +
+                     "FROM users u " +
+                     "LEFT JOIN user_profiles p ON u.user_id = p.user_id " +
+                     "ORDER BY u.created_at DESC LIMIT ?";
+        List<User> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapUserWithProfile(rs));
+            }
+        } catch (SQLException e) { logError(e); }
+        return list;
     }
 
     // ── Admin: Read ───────────────────────────────────────────────────────────────
