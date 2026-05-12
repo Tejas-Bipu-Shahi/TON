@@ -135,6 +135,49 @@ public class EmailService {
         return sendHtml(recipientEmail, subject, html);
     }
 
+    public static boolean sendContactConfirmation(String senderName, String senderEmail,
+                                                   String subject, String messageBody) {
+        String confirmSubject = "Thank you for reaching out — Thoughts of Nomads";
+        String html = "<html><body style='margin:0;padding:0;background:#f8f9fa;font-family:Arial,sans-serif;'>"
+            + "<table width='100%' cellpadding='0' cellspacing='0' style='background:#f8f9fa;padding:40px 0;'><tr><td align='center'>"
+            + "<table width='560' cellpadding='0' cellspacing='0' style='background:#ffffff;border-radius:8px;overflow:hidden;'>"
+            + "<tr><td style='background:#0e193e;padding:24px 36px;'>"
+            + "<span style='font-family:Georgia,serif;font-size:20px;color:#ffffff;font-weight:bold;'>Thoughts of Nomads</span>"
+            + "</td></tr>"
+            + "<tr><td style='padding:36px;'>"
+            + "<h2 style='font-family:Georgia,serif;font-size:22px;color:#0e193e;margin:0 0 16px;'>Thank you for reaching out, " + senderName + "!</h2>"
+            + "<p style='font-size:15px;color:#45464e;line-height:1.6;margin:0 0 24px;'>We've received your message and our team will get back to you within <strong>24 hours</strong>.</p>"
+            + "<div style='background:#f3f4f5;border-left:4px solid #0e193e;border-radius:4px;padding:20px 24px;margin-bottom:24px;'>"
+            + "<p style='font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#45464e;margin:0 0 8px;'>Your message</p>"
+            + (subject != null && !subject.isBlank() ? "<p style='font-size:14px;font-weight:600;color:#0e193e;margin:0 0 10px;'>" + subject + "</p>" : "")
+            + "<p style='font-size:14px;color:#45464e;line-height:1.6;margin:0;white-space:pre-wrap;'>" + messageBody + "</p>"
+            + "</div>"
+            + "<p style='font-size:14px;color:#45464e;line-height:1.6;margin:0;'>In the meantime, feel free to explore our latest stories at <a href='https://thoughtsofnomads.com' style='color:#0e193e;'>thoughtsofnomads.com</a>.</p>"
+            + "</td></tr>"
+            + "<tr><td style='padding:20px 36px;border-top:1px solid #e1e3e4;'>"
+            + "<p style='font-size:12px;color:#9b9ea4;margin:0;'>— The Thoughts of Nomads Team</p>"
+            + "</td></tr>"
+            + "</table></td></tr></table></body></html>";
+        return sendHtml(senderEmail, confirmSubject, html);
+    }
+
+    public static boolean sendContactMessage(String senderName, String senderEmail,
+                                              String subject, String messageBody) {
+        String fullSubject = (subject != null && !subject.isBlank())
+                ? "Contact: " + subject + " — Thoughts of Nomads"
+                : "New Contact Message — Thoughts of Nomads";
+        String body = "You have a new contact form submission.\n\n"
+                + "From:    " + senderName + "\n"
+                + "Email:   " + senderEmail + "\n"
+                + "Subject: " + (subject != null ? subject : "(none)") + "\n\n"
+                + "Message:\n"
+                + "--------------------\n"
+                + messageBody + "\n"
+                + "--------------------\n\n"
+                + "Reply directly to " + senderEmail + " to respond.";
+        return sendPlain(MAIL_USER, fullSubject, body);
+    }
+
     public static boolean sendOTP(String recipientEmail, String otp) {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");

@@ -280,10 +280,6 @@
 
     <!-- ── Member Topbar ────────────────────────────────────────── -->
     <header class="member-topbar">
-        <a href="<%= cp %>/" class="topbar-back">
-            <span class="material-symbols-outlined">arrow_back</span>
-            View Site
-        </a>
         <div class="topbar-brand">Thoughts of Nomads</div>
         <div class="topbar-user">
             <span class="topbar-name"><%= fullName %></span>
@@ -466,10 +462,6 @@
                     <a href="<%= cp %>/member/profile" class="action-link">
                         <span class="material-symbols-outlined">manage_accounts</span>
                         Profile Settings
-                    </a>
-                    <a href="<%= cp %>/" class="action-link">
-                        <span class="material-symbols-outlined">public</span>
-                        View Live Site
                     </a>
                     <a href="<%= cp %>/auth/logout" class="action-link" style="color:#c62828;">
                         <span class="material-symbols-outlined" style="color:#c62828;">logout</span>

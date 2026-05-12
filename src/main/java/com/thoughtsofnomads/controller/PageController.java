@@ -1,5 +1,6 @@
 package com.thoughtsofnomads.controller;
 
+import com.thoughtsofnomads.config.EmailService;
 import com.thoughtsofnomads.dao.ArticleDAO;
 import com.thoughtsofnomads.dao.CategoryDAO;
 import com.thoughtsofnomads.dao.TagDAO;
@@ -15,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet({"/about", "/contact", "/latest", "/categories", "/category", "/article", "/search"})
+@WebServlet({"/about", "/contact", "/latest", "/categories", "/category", "/article", "/search", "/terms", "/privacy"})
 public class PageController extends HttpServlet {
 
     private static final int PAGE_SIZE = 8;
@@ -46,7 +47,26 @@ public class PageController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if ("/contact".equals(request.getServletPath())) {
-            request.setAttribute("success", "Thank you for reaching out! We'll get back to you soon.");
+            String name    = request.getParameter("fullName");
+            String email   = request.getParameter("emailAddress");
+            String subject = request.getParameter("subject");
+            String message = request.getParameter("message");
+
+            if (name == null || name.isBlank() || email == null || email.isBlank()
+                    || message == null || message.isBlank()) {
+                request.setAttribute("error", "Please fill in all required fields.");
+            } else {
+                String trimmedSubject = subject != null ? subject.trim() : null;
+                boolean sent = EmailService.sendContactMessage(name.trim(), email.trim(),
+                        trimmedSubject, message.trim());
+                if (sent) {
+                    EmailService.sendContactConfirmation(name.trim(), email.trim(),
+                            trimmedSubject, message.trim());
+                    request.setAttribute("success", "Thank you for reaching out! We'll get back to you soon.");
+                } else {
+                    request.setAttribute("error", "We couldn't send your message right now. Please try again later or email us directly.");
+                }
+            }
             request.getRequestDispatcher("/WEB-INF/views/public/contact.jsp").forward(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
