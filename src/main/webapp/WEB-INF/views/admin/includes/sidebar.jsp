@@ -104,6 +104,32 @@
     border-top: 1px solid rgba(255,255,255,0.07);
 }
 
+.sidebar-view-site {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.58);
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    margin-bottom: 4px;
+}
+
+.sidebar-view-site:hover {
+    background-color: rgba(255,255,255,0.07);
+    color: #ffffff;
+}
+
+.sidebar-view-site .material-symbols-outlined {
+    font-size: 19px;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+}
+
 .sidebar-signout {
     display: flex;
     align-items: center;
@@ -191,6 +217,10 @@
     </nav>
 
     <div class="sidebar-footer">
+        <a href="<%= cp %>/" class="sidebar-view-site">
+            <span class="material-symbols-outlined">open_in_new</span>
+            View Site
+        </a>
         <a href="<%= cp %>/auth/logout" class="sidebar-signout">
             <span class="material-symbols-outlined">logout</span>
             Sign Out

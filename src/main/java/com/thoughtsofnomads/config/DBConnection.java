@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DBConnection {
     // serverTimezone=UTC is critical — without it MySQL uses local time (Nepal UTC+5:45)
     // which caused the lockout timer to show 355 minutes instead of 10
-    private static final String URL = "jdbc:mysql://localhost:3306/thoughts_of_nomads?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/thoughts_of_nomads?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true";
     private static final String USER = "admin";
     private static final String PASSWORD = "your_password";
 

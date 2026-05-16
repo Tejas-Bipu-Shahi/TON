@@ -177,8 +177,9 @@
             <%= initials %>
             <% if (!profilePic.isEmpty()) { %><img src="<%= cp %>/<%= profilePic %>" alt=""/><% } %>
         </div>
-        <a href="<%= cp %>/auth/logout" class="topbar-logout" title="Sign out">
-            <span class="material-symbols-outlined">logout</span>
+        <a href="<%= cp %>/" class="topbar-back">
+            <span class="material-symbols-outlined">open_in_new</span>
+            View Site
         </a>
     </div>
 </nav>
